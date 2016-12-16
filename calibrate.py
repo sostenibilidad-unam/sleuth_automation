@@ -14,6 +14,10 @@ parser.add_argument('--input_dir',
 parser.add_argument('--output_dir',
                     required=True,
                     help='path to output dir')
+parser.add_argument('--span',
+                    type=int,
+                    default=10,
+                    help='ranges for parameters are calculated +- span')
 parser.add_argument('--urban', type=argparse.FileType('r'),
                     required=True,
                     nargs="+",
@@ -62,44 +66,54 @@ def rescale(par):
     else:
         return par
 
-diff_start = rescale(diff) - 10
-diff_end = rescale(diff) + 10
+diff_start = rescale(diff) - args.span
+diff_end = rescale(diff) + args.span
+diff_step = int((diff_end - diff_start) / 4.0)
 
-brd_start = rescale(brd) - 10
-brd_end = rescale(brd )+ 10
+brd_start = rescale(brd) - args.span
+brd_end = rescale(brd )+ args.span
+brd_step = int((brd_end - brd_start) / 4.0)
 
-sprd_start = rescale(sprd) - 10
-sprd_end = rescale(sprd) + 10
+sprd_start = rescale(sprd) - args.span
+sprd_end = rescale(sprd) + args.span
+sprd_step = int((sprd_end - sprd_start) / 4.0)
 
-slp_start = rescale(slp) - 10
-slp_end = rescale(slp )+ 10
+slp_start = rescale(slp) - args.span
+slp_end = rescale(slp) + args.span
+slp_step = int((slp_end - slp_start) / 4.0)
 
-rg_start = rescale(rg) - 10
-rg_end = rescale(rg) + 10
+rg_start = rescale(rg) - args.span
+rg_end = rescale(rg) + args.span
+rg_step = int((rg_end - rg_start) / 4.0)
 
 template = Template(args.template.read())
 print template.render(
-    input_dir=args.input_dir,
+    input_dir=args.input_dir+"/",
     output_dir=args.output_dir,
     diff_start=diff_start,
     diff_end=diff_end,
+    diff_step=diff_step,
     brd_start=brd_start,
     brd_end=brd_end,
+    brd_step=brd_step,
     sprd_start=sprd_start,
     sprd_end=sprd_end,
+    sprd_step=sprd_step,
     slp_start=slp_start,
     slp_end=slp_end,
+    slp_step=slp_step,
     rg_start=rg_start,
     rg_end=rg_end,
+    rg_step=rg_step,
     diff=diff,
     brd=brd,
     sprd=sprd,
     slp=slp,
     rg=rg,
-    urban=[p.name for p in args.urban],
-    roads=[p.name for p in args.roads],    
     predict_start=args.predict_start,
-    predict_end=args.predict_end,
-    exclude=args.exclude.name,
-    slope=args.slope.name,
-    hillshade=args.hillshade.name)
+    predict_end=args.predict_end,    
+    urban=[p.name.replace(args.input_dir+"/", '') for p in args.urban],
+    roads=[p.name.replace(args.input_dir+"/", '') for p in args.roads],    
+    exclude=args.exclude.name.replace(args.input_dir+"/", ''),
+    slope=args.slope.name.replace(args.input_dir+"/", ''),
+    hillshade=args.hillshade.name.replace(args.input_dir+"/", ''))
