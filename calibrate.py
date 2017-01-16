@@ -89,7 +89,7 @@ rg_step = int((rg_end - rg_start) / 4.0)
 template = Template(args.template.read())
 print template.render(
     input_dir=args.input_dir+"/",
-    output_dir=args.output_dir,
+    output_dir=args.output_dir + "/",
     diff_start=diff_start,
     diff_end=diff_end,
     diff_step=diff_step,
