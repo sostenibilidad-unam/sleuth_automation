@@ -1,23 +1,25 @@
 #!/usr/bin/env python
 
+import pandas
 import argparse
 import sys
+from math import floor
 from jinja2 import Template
 
 parser = argparse.ArgumentParser(description='Process some integers.')
-parser.add_argument('--parameters', type=argparse.FileType('r'),
-                    default=sys.stdin,
-                    help='five parameters with the largest product')
+parser.add_argument('--controlstats', type=argparse.FileType('r'),
+                    required=False,
+                    help='path to control_stats.log file of previous calibration stage, will create coarse scenario if absent')
+parser.add_argument('--step',
+                    type=int,
+                    default=25,
+                    help='step hint for calibration interval (suggested: 25 for coarse, 5 for fine, 1 for final)')
 parser.add_argument('--input_dir',
                     required=True,
                     help='path to input dir')
 parser.add_argument('--output_dir',
                     required=True,
                     help='path to output dir')
-parser.add_argument('--span',
-                    type=int,
-                    default=10,
-                    help='ranges for parameters are calculated +- span')
 parser.add_argument('--urban', type=argparse.FileType('r'),
                     required=True,
                     nargs="+",
@@ -49,42 +51,85 @@ parser.add_argument('--template', type=argparse.FileType('r'),
 
 args = parser.parse_args()
 
-
-for line in args.parameters.readlines():
-    (diff, brd, sprd, slp, rg) = line.strip().split()
-    diff = int(diff)
-    brd = int(brd)
-    sprd = int(sprd)
-    slp = int(slp)
-    rg = int(rg)
-
-def rescale(par):
-    if par == 100:
-        return 90
-    elif par == 1:
-        return 11
+def step(Max, Start):
+    if Max == 1:
+        Max = 0
+    if Max == Start:
+        return args.step
     else:
-        return par
+        return int(floor((Max - Start) / 4.0))
 
-diff_start = rescale(diff) - args.span
-diff_end = rescale(diff) + args.span
-diff_step = int((diff_end - diff_start) / 4.0)
+def end(Start, Step):
+    return Start + (4 * Step)
 
-brd_start = rescale(brd) - args.span
-brd_end = rescale(brd )+ args.span
-brd_step = int((brd_end - brd_start) / 4.0)
+def start(Start, Max):
+    if Start == 1:
+        Start = 0
+    if Max == 100 and Start == Max:
+        Start = Max - (4 * args.step)
+    return Start
 
-sprd_start = rescale(sprd) - args.span
-sprd_end = rescale(sprd) + args.span
-sprd_step = int((sprd_end - sprd_start) / 4.0)
+if args.controlstats:
+    widths = [7,8,8,8,8,8,8,8,8,8,8,8,8,8,5,5,5,5,5]
+    df = pandas.read_fwf(args.controlstats, skiprows = 1, widths = widths)
+    primeros10 = df.sort_values(by = 'Leesalee', ascending = False)[:10]
+    best_fit = df.sort_values(by = 'Leesalee', ascending = False)[:1]
 
-slp_start = rescale(slp) - args.span
-slp_end = rescale(slp) + args.span
-slp_step = int((slp_end - slp_start) / 4.0)
+    diff = best_fit['Diff']    
+    diff_max = primeros10['Diff'].max()
+    diff_start = start(primeros10['Diff'].min(), diff_max)
+    diff_step = step(diff_max, diff_start)
+    diff_end = end(diff_start, diff_step)
 
-rg_start = rescale(rg) - args.span
-rg_end = rescale(rg) + args.span
-rg_step = int((rg_end - rg_start) / 4.0)
+    brd = best_fit['Brd']
+    brd_max = primeros10['Brd'].max()
+    brd_start = start(primeros10['Brd'].min(), brd_max)
+    brd_step = step(brd_max, brd_start)
+    brd_end = end(brd_start, brd_step)
+
+    sprd = best_fit['Sprd']
+    sprd_max = primeros10['Sprd'].max()
+    sprd_start = start(primeros10['Sprd'].min(), sprd_max)
+    sprd_step = step(sprd_max, sprd_start)
+    sprd_end = end(sprd_start, sprd_step)
+
+    slp = best_fit['Slp']
+    slp_max = primeros10['Slp'].max()
+    slp_start = start(primeros10['Slp'].min(), slp_max)
+    slp_step = step(slp_max, slp_start)
+    slp_end = end(slp_start, slp_step)
+
+    rg = best_fit['RG']
+    rg_max = primeros10['RG'].max()
+    rg_start = start(primeros10['RG'].min(), rg_max)
+    rg_step = step(rg_max, rg_start)
+    rg_end = end(rg_start, rg_step)
+else:
+    diff = 50
+    diff_start = 0
+    diff_step = 25
+    diff_end = 100
+
+    brd = 50
+    brd_start = 0
+    brd_step = 25
+    brd_end = 100
+
+    sprd = 50
+    sprd_start = 0
+    sprd_step = 25
+    sprd_end = 100
+
+    slp = 50
+    slp_start = 0
+    slp_step = 25
+    slp_end = 100
+
+    rg = 50
+    rg_start = 0
+    rg_step = 25
+    rg_end = 100
+
 
 template = Template(args.template.read())
 print template.render(
@@ -111,9 +156,9 @@ print template.render(
     slp=slp,
     rg=rg,
     predict_start=args.predict_start,
-    predict_end=args.predict_end,    
+    predict_end=args.predict_end,
     urban=[p.name.replace(args.input_dir+"/", '') for p in args.urban],
-    roads=[p.name.replace(args.input_dir+"/", '') for p in args.roads],    
+    roads=[p.name.replace(args.input_dir+"/", '') for p in args.roads],
     exclude=args.exclude.name.replace(args.input_dir+"/", ''),
     slope=args.slope.name.replace(args.input_dir+"/", ''),
     hillshade=args.hillshade.name.replace(args.input_dir+"/", ''))
