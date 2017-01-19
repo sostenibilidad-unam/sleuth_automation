@@ -1,4 +1,5 @@
 executable = group_run.sh
+request_cpus = 40
 
 Arguments = 1
 Error = Group1.err
