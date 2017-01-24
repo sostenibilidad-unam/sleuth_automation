@@ -1,0 +1,16 @@
+--- sleuth/Makefile	2017-01-16 17:11:30.662039923 -0600
++++ tmp/SLEUTH3.0beta_p01_linux/Makefile	2001-03-13 15:34:47.000000000 -0600
+@@ -24,10 +24,10 @@
+ #   -DNDEBUG (turns asserts off; for production code; faster execution)
+ #   -DMPI (if running on an MPI machine else -UMPI)
+ #
+-CFLAGS=-O3 -DNDEBUG -DMPI -I$(GD_LIB) -I/usr/lib/openmpi/include
++CFLAGS=-O3 -DNDEBUG -UMPI -I$(GD_LIB)
+ 
+-CLIBS = -L./ -L./GD/ -lgd -lm -lc -lmpi
+-#CLIBS = -L./ -L./GD/ -lgd -lm -lc
++#CLIBS = -L./ -L./GD/ -lgd -lm -lc -lmpi
++CLIBS = -L./ -L./GD/ -lgd -lm -lc
+ 
+ SRCS_W_HDRS   = stats_obj.c timer_obj.c proc_obj.c transition_obj.c coeff_obj.c landclass_obj.c deltatron.c growth.c output.c utilities.c spread.c random.c scenario_obj.c igrid_obj.c gdif_obj.c pgrid_obj.c memory_obj.c wgrid_obj.c grid_obj.c color_obj.c driver.c input.c
+ 
