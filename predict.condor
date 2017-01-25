@@ -1,4 +1,4 @@
-executable = group_run.sh
+executable = group_predict.sh
 request_cpus = 40
 
 Arguments = 1
