@@ -7,6 +7,10 @@ from math import floor
 from jinja2 import Template
 
 parser = argparse.ArgumentParser(description='Process some integers.')
+parser.add_argument('--mode', 
+                    default='calibrate',
+                    choices=['calibrate', 'predict'],
+                    help='calibrate mode sets montecarlo iterations to 5, predict mode sets it to 150')
 parser.add_argument('--controlstats', type=argparse.FileType('r'),
                     required=False,
                     help='path to control_stats.log file of previous calibration stage, will create coarse scenario if absent')
@@ -51,13 +55,23 @@ parser.add_argument('--template', type=argparse.FileType('r'),
 
 args = parser.parse_args()
 
+if args.mode == 'calibrate':
+    monte_carlo_iterations = 5
+elif args.mode == 'predict':
+    monte_carlo_iterations = 150
+
+
 def step(Max, Start):
     if Max == 1:
         Max = 0
     if Max == Start:
         return args.step
     else:
-        return int(floor((Max - Start) / 4.0))
+        step = int(floor((Max - Start) / 4.0))
+        if step < 1:
+            return 1
+        else:
+            return step
 
 def end(Start, Step):
     return Start + (4 * Step)
@@ -155,6 +169,7 @@ print template.render(
     sprd=sprd,
     slp=slp,
     rg=rg,
+    monte_carlo_iterations=monte_carlo_iterations,
     predict_start=args.predict_start,
     predict_end=args.predict_end,
     urban=[p.name.replace(args.input_dir+"/", '') for p in args.urban],
