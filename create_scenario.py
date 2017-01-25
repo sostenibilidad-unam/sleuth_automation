@@ -75,31 +75,31 @@ if args.controlstats:
     primeros10 = df.sort_values(by = 'Leesalee', ascending = False)[:10]
     best_fit = df.sort_values(by = 'Leesalee', ascending = False)[:1]
 
-    diff = best_fit['Diff']    
+    diff = best_fit['Diff'].values[0]    
     diff_max = primeros10['Diff'].max()
     diff_start = start(primeros10['Diff'].min(), diff_max)
     diff_step = step(diff_max, diff_start)
     diff_end = end(diff_start, diff_step)
 
-    brd = best_fit['Brd']
+    brd = best_fit['Brd'].values[0]    
     brd_max = primeros10['Brd'].max()
     brd_start = start(primeros10['Brd'].min(), brd_max)
     brd_step = step(brd_max, brd_start)
     brd_end = end(brd_start, brd_step)
 
-    sprd = best_fit['Sprd']
+    sprd = best_fit['Sprd'].values[0]    
     sprd_max = primeros10['Sprd'].max()
     sprd_start = start(primeros10['Sprd'].min(), sprd_max)
     sprd_step = step(sprd_max, sprd_start)
     sprd_end = end(sprd_start, sprd_step)
 
-    slp = best_fit['Slp']
+    slp = best_fit['Slp'].values[0]    
     slp_max = primeros10['Slp'].max()
     slp_start = start(primeros10['Slp'].min(), slp_max)
     slp_step = step(slp_max, slp_start)
     slp_end = end(slp_start, slp_step)
 
-    rg = best_fit['RG']
+    rg = best_fit['RG'].values[0]
     rg_max = primeros10['RG'].max()
     rg_start = start(primeros10['RG'].min(), rg_max)
     rg_step = step(rg_max, rg_start)
