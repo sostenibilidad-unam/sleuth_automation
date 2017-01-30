@@ -2,76 +2,84 @@
 
 source /srv/home/fidel/python_envs/sleuth/bin/activate
 
-GRUPO=Group$1
-ROOT=/srv/home/fidel/Para_SLEUTH
-INPUT=$ROOT/$GRUPO
+#
+# usage: ./group_calibrate.sh LOCATION /path/to/location_dir
+#
+# location must be the prefix of the input data according to this documentation:
+# http://www.ncgia.ucsb.edu/projects/gig/Imp/imSetUp.htm#namingConvention
 
-mkdir -p $ROOT/$GRUPO/out/coarse
-./create_scenario.py --input_dir $INPUT \
-		     --output_dir $ROOT/$GRUPO/out/coarse \
-		     --urban $INPUT/$GRUPO.urban.1980.gif \
-		     $INPUT/$GRUPO.urban.1990.gif \
-		     $INPUT/$GRUPO.urban.2000.gif \
-		     $INPUT/$GRUPO.urban.2011.gif \
-		     --roads $INPUT/$GRUPO.roads.1980.gif \
-		     $INPUT/$GRUPO.roads.1990.gif \
-		     $INPUT/$GRUPO.roads.2000.gif \
-		     $INPUT/$GRUPO.roads.2011.gif \
-		     --exclude $INPUT/$GRUPO.excluded.gif \
-		     --slope $INPUT/$GRUPO.slope.gif \
-		     --hillshade $INPUT/$GRUPO.hillshade.gif \
+LOCATION=$1
+LPATH=$2
+
+OUTDIR=$LPATH/out/coarse
+mkdir -p $OUTDIR
+./create_scenario.py --input_dir $LPATH \
+		     --output_dir $OUTDIR \
+		     --urban $LPATH/${LOCATION}.urban.1980.gif \
+		       $LPATH/${LOCATION}.urban.1990.gif \
+		       $LPATH/${LOCATION}.urban.2000.gif \
+		       $LPATH/${LOCATION}.urban.2011.gif \
+		     --roads $LPATH/${LOCATION}.roads.1980.gif \
+		       $LPATH/${LOCATION}.roads.1990.gif \
+		       $LPATH/${LOCATION}.roads.2000.gif \
+		       $LPATH/${LOCATION}.roads.2011.gif \
+		     --exclude $LPATH/${LOCATION}.excluded.gif \
+		     --slope $LPATH/${LOCATION}.slope.gif \
+		     --hillshade $LPATH/${LOCATION}.hillshade.gif \
 		     --predict_start 2011 \
 		     --predict_end 2060 \
 		     --template scenario_template.jinja \
 		     --step 25 \
-		     > scenario.$GRUPO.coarse
+		     > $LPATH/scenario.$LOCATION.coarse
 
-mpirun -np 40 /srv/home/fidel/sleuth/grow calibrate scenario.$GRUPO.coarse
+mpirun -np 40 /srv/home/fidel/sleuth/grow calibrate $LPATH/scenario.$LOCATION.coarse
 
-mkdir -p $ROOT/$GRUPO/out/fine
+OUTDIR=$LPATH/out/fine
+mkdir -p $OUTDIR
 
-./create_scenario.py --input_dir $INPUT \
-		     --output_dir $ROOT/$GRUPO/out/fine \
-		     --controlstats $ROOT/$GRUPO/out/coarse/control_stats.log \
-		     --urban $INPUT/$GRUPO.urban.1980.gif \
-		     $INPUT/$GRUPO.urban.1990.gif \
-		     $INPUT/$GRUPO.urban.2000.gif \
-		     $INPUT/$GRUPO.urban.2011.gif \
-		     --roads $INPUT/$GRUPO.roads.1980.gif \
-		     $INPUT/$GRUPO.roads.1990.gif \
-		     $INPUT/$GRUPO.roads.2000.gif \
-		     $INPUT/$GRUPO.roads.2011.gif \
-		     --exclude $INPUT/$GRUPO.excluded.gif \
-		     --slope $INPUT/$GRUPO.slope.gif \
-		     --hillshade $INPUT/$GRUPO.hillshade.gif \
+./create_scenario.py --input_dir $LPATH \
+		     --output_dir $OUTDIR \
+		     --controlstats $LPATH/out/coarse/control_stats.log \
+		     --urban $LPATH/${LOCATION}.urban.1980.gif \
+  		       $LPATH/${LOCATION}.urban.1990.gif \
+		       $LPATH/${LOCATION}.urban.2000.gif \
+		       $LPATH/${LOCATION}.urban.2011.gif \
+		     --roads $LPATH/${LOCATION}.roads.1980.gif \
+		       $LPATH/${LOCATION}.roads.1990.gif \
+		       $LPATH/${LOCATION}.roads.2000.gif \
+		       $LPATH/${LOCATION}.roads.2011.gif \
+		     --exclude $LPATH/${LOCATION}.excluded.gif \
+		     --slope $LPATH/${LOCATION}.slope.gif \
+		     --hillshade $LPATH/${LOCATION}.hillshade.gif \
 		     --predict_start 2011 \
 		     --predict_end 2060 \
 		     --template scenario_template.jinja \
 		     --step 5 \
-		     > scenario.$GRUPO.fine
+		     > $LPATH/scenario.$LOCATION.fine
 
-mpirun -np 40 /srv/home/fidel/sleuth/grow calibrate scenario.$GRUPO.fine
+mpirun -np 40 /srv/home/fidel/sleuth/grow calibrate $LPATH/scenario.$LOCATION.fine
 
-mkdir -p $ROOT/$GRUPO/out/final
+OUTDIR=$LPATH/out/final
+mkdir -p $OUTDIR
 
-./create_scenario.py --input_dir $INPUT \
-		     --output_dir $ROOT/$GRUPO/out/final \
-		     --controlstats $ROOT/$GRUPO/out/fine/control_stats.log \
-		     --urban $INPUT/$GRUPO.urban.1980.gif \
-		     $INPUT/$GRUPO.urban.1990.gif \
-		     $INPUT/$GRUPO.urban.2000.gif \
-		     $INPUT/$GRUPO.urban.2011.gif \
-		     --roads $INPUT/$GRUPO.roads.1980.gif \
-		     $INPUT/$GRUPO.roads.1990.gif \
-		     $INPUT/$GRUPO.roads.2000.gif \
-		     $INPUT/$GRUPO.roads.2011.gif \
-		     --exclude $INPUT/$GRUPO.excluded.gif \
-		     --slope $INPUT/$GRUPO.slope.gif \
-		     --hillshade $INPUT/$GRUPO.hillshade.gif \
+./create_scenario.py --input_dir $LPATH \
+		     --output_dir $OUTDIR \
+		     --controlstats $LPATH/out/fine/control_stats.log \
+		     --urban $LPATH/${LOCATION}.urban.1980.gif \
+		        $LPATH/${LOCATION}.urban.1990.gif \
+		        $LPATH/${LOCATION}.urban.2000.gif \
+		        $LPATH/${LOCATION}.urban.2011.gif \
+		     --roads $LPATH/${LOCATION}.roads.1980.gif \
+		       $LPATH/${LOCATION}.roads.1990.gif \
+		       $LPATH/${LOCATION}.roads.2000.gif \
+		       $LPATH/${LOCATION}.roads.2011.gif \
+		     --exclude $LPATH/${LOCATION}.excluded.gif \
+		     --slope $LPATH/${LOCATION}.slope.gif \
+		     --hillshade $LPATH/${LOCATION}.hillshade.gif \
 		     --predict_start 2011 \
 		     --predict_end 2060 \
 		     --template scenario_template.jinja \
 		     --step 1 \
-		     > scenario.$GRUPO.final
+		     > $LPATH/scenario.$LOCATION.final
 
-mpirun -np 40 /srv/home/fidel/sleuth/grow calibrate scenario.$GRUPO.final
+mpirun -np 40 /srv/home/fidel/sleuth/grow calibrate $LPATH/scenario.$LOCATION.final
