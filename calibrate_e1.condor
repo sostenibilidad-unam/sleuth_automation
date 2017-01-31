@@ -1,0 +1,56 @@
+executable = group_calibrate.sh
+request_cpus = 40
+
+Arguments = Group1 /srv/home/fidel/Para_SLEUTH_e01/Group1
+Error = Group1.err
+Output = Group1.out
+Log = Group1.log
+Queue
+
+Arguments = Group2 /srv/home/fidel/Para_SLEUTH_e01/Group2
+Error = Group2.err
+Output = Group2.out
+Log = Group2.log
+Queue
+
+Arguments = Group3 /srv/home/fidel/Para_SLEUTH_e01/Group3
+Error = Group3.err
+Output = Group3.out
+Log = Group3.log
+Queue
+
+Arguments = Group4 /srv/home/fidel/Para_SLEUTH_e01/Group4
+Error = Group4.err
+Output = Group4.out
+Log = Group4.log
+Queue
+
+Arguments = Group5 /srv/home/fidel/Para_SLEUTH_e01/Group5
+Error = Group5.err
+Output = Group5.out
+Log = Group5.log
+Queue
+
+Arguments = Group6 /srv/home/fidel/Para_SLEUTH_e01/Group6
+Error = Group6.err
+Output = Group6.out
+Log = Group6.log
+Queue
+
+Arguments = Group7 /srv/home/fidel/Para_SLEUTH_e01/Group7
+Error = Group7.err
+Output = Group7.out
+Log = Group7.log
+Queue
+
+Arguments = Group8 /srv/home/fidel/Para_SLEUTH_e01/Group8
+Error = Group8.err
+Output = Group8.out
+Log = Group8.log
+Queue
+
+Arguments = Group9 /srv/home/fidel/Para_SLEUTH_e01/Group9
+Error = Group9.err
+Output = Group9.out
+Log = Group9.log
+Queue
