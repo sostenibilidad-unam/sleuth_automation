@@ -15,7 +15,7 @@ class ControlStats:
         input path to control_stats.log
         step 
         """
-        self.step = step
+        self.default_step = step
         self.params = {}
         with open(path) as controlstats:
             widths = [7,8,8,8,8,8,8,8,8,8,8,8,8,8,5,5,5,5,5]
@@ -79,22 +79,22 @@ class ControlStats:
                             'rg_end': rg_end }
 
                         
-    def step(Max, Start):
+    def step(self, Max, Start):
         if Max == 1:
             Max = 0
         if Max == Start:
-            return self.step
+            return self.default_step
         else:
             step = int(floor((Max - Start) / 4.0))
             if step < 1:
                 return 1
             else:
-                return self.step
+                return self.default_step
 
-    def end(Start, Step):
+    def end(self, Start, Step):
         return Start + (4 * Step)
 
-    def start(Start, Max):
+    def start(self, Start, Max):
         if Start == 1:
             Start = 0
         if Max == 100 and Start == Max:

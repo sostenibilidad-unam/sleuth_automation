@@ -24,29 +24,29 @@ class Location:
         pass
    
     def create_scenario_file(self, stage, monte_carlo_iterations):
-        if stage == 'coarse':
-            pass
-        elif stage == 'fine':
-            cs = ControlStats(os.path.join(os.path.join(self.output_path, stage), 'control_stats.log')
+        # if stage == 'coarse':
+        #     pass
+        # elif stage == 'fine':
+        #     cs = ControlStats(os.path.join(os.path.join(self.output_path, stage), 'control_stats.log')
         
-        env = Environment(loader=PackageLoader('sleuth_automation', 'templates'))
-        template = env.get_template('scenario.jinja')
+        # env = Environment(loader=PackageLoader('sleuth_automation', 'templates'))
+        # template = env.get_template('scenario.jinja')
 
-        arguments = {input_dir: self.input_dir + "/",
-                    output_dir: self.output_dir + "/"
-            monte_carlo_iterations=monte_carlo_iterations,
-            predict_start=args.predict_start,
-            predict_end=args.predict_end,
-            urban=[p.name.replace(args.input_dir+"/", '') for p in args.urban],
-            roads=[p.name.replace(args.input_dir+"/", '') for p in args.roads],
-            exclude=args.exclude.name.replace(args.input_dir+"/", ''),
-            slope=args.slope.name.replace(args.input_dir+"/", ''),
-            hillshade=args.hillshade.name.replace(args.input_dir+"/", '')
-                    }
+        # arguments = {input_dir: self.input_dir + "/",
+        #             output_dir: self.output_dir + "/"
+        #     monte_carlo_iterations=monte_carlo_iterations,
+        #     predict_start=args.predict_start,
+        #     predict_end=args.predict_end,
+        #     urban=[p.name.replace(args.input_dir+"/", '') for p in args.urban],
+        #     roads=[p.name.replace(args.input_dir+"/", '') for p in args.roads],
+        #     exclude=args.exclude.name.replace(args.input_dir+"/", ''),
+        #     slope=args.slope.name.replace(args.input_dir+"/", ''),
+        #     hillshade=args.hillshade.name.replace(args.input_dir+"/", '')
+        #             }
 
-        arguments.update(cs.params)
-        template.render(arguments)        
-
+        # arguments.update(cs.params)
+        # template.render(arguments)        
+        pass
 
     def sleuth_calibrate_coarse(self):
         diff = 50
@@ -92,9 +92,4 @@ class Location:
 
 
 
-cs = ControlStats('/path/to/control_stats.log')
 
-cs.diff -> 50
-cs.diff_start -> 0
-cs.diff_step
-cs.diff_end 
