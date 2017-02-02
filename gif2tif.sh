@@ -23,6 +23,7 @@ gdal_translate -of GTiff \
 echo "warping"
 gdalwarp -r near \
 	 -order 1 \
+	 -t_srs EPSG:32614 \
 	 -co COMPRESS=NONE \
 	 $TMPGIF \
 	 $OUTTIF
