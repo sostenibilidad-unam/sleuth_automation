@@ -23,31 +23,31 @@ class ControlStats:
             primeros10 = df.sort_values(by = 'Leesalee', ascending = False)[:10]
             best_fit = df.sort_values(by = 'Leesalee', ascending = False)[:1]
 
-            diff = best_fit['Diff'].values[0]    
+            diff = int(best_fit['Diff'].values[0])    
             diff_max = primeros10['Diff'].max()
             diff_start = self.start(primeros10['Diff'].min(), diff_max)
             diff_step = self.step(diff_max, diff_start)
             diff_end = self.end(diff_start, diff_step)
 
-            brd = best_fit['Brd'].values[0]    
+            brd = int(best_fit['Brd'].values[0])
             brd_max = primeros10['Brd'].max()
             brd_start = self.start(primeros10['Brd'].min(), brd_max)
             brd_step = self.step(brd_max, brd_start)
             brd_end = self.end(brd_start, brd_step)
 
-            sprd = best_fit['Sprd'].values[0]    
+            sprd = int(best_fit['Sprd'].values[0])    
             sprd_max = primeros10['Sprd'].max()
             sprd_start = self.start(primeros10['Sprd'].min(), sprd_max)
             sprd_step = self.step(sprd_max, sprd_start)
             sprd_end = self.end(sprd_start, sprd_step)
 
-            slp = best_fit['Slp'].values[0]    
+            slp = int(best_fit['Slp'].values[0])   
             slp_max = primeros10['Slp'].max()
             slp_start = self.start(primeros10['Slp'].min(), slp_max)
             slp_step = self.step(slp_max, slp_start)
             slp_end = self.end(slp_start, slp_step)
 
-            rg = best_fit['RG'].values[0]
+            rg = int(best_fit['RG'].values[0])
             rg_max = primeros10['RG'].max()
             rg_start = self.start(primeros10['RG'].min(), rg_max)
             rg_step = self.step(rg_max, rg_start)
@@ -92,11 +92,11 @@ class ControlStats:
                 return step
 
     def end(self, Start, Step):
-        return Start + (4 * Step)
+        return int(Start + (4 * Step))
 
     def start(self, Start, Max):
         if Start == 1:
             Start = 0
         if Max == 100 and Start == Max:
             Start = Max - (4 * self.default_step)
-        return Start
+        return int(Start)
