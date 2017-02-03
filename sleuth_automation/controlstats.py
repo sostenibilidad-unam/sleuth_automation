@@ -89,7 +89,7 @@ class ControlStats:
             if step < 1:
                 return 1
             else:
-                return self.default_step
+                return step
 
     def end(self, Start, Step):
         return Start + (4 * Step)
@@ -98,5 +98,5 @@ class ControlStats:
         if Start == 1:
             Start = 0
         if Max == 100 and Start == Max:
-            Start = Max - (4 * args.step)
+            Start = Max - (4 * self.default_step)
         return Start
