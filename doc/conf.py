@@ -50,7 +50,7 @@ source_suffix = '.rst'
 master_doc = 'index'
 
 # General information about the project.
-project = 'Slat'
+project = 'SLEUTH Automation'
 copyright = '2017, Fidel Serrano, Rodrigo Garcia'
 author = 'Fidel Serrano, Rodrigo Garcia'
 
@@ -104,7 +104,7 @@ html_static_path = ['_static']
 # -- Options for HTMLHelp output ------------------------------------------
 
 # Output file base name for HTML help builder.
-htmlhelp_basename = 'Slatdoc'
+htmlhelp_basename = 'sleuth_automation_doc'
 
 
 # -- Options for LaTeX output ---------------------------------------------
@@ -131,7 +131,7 @@ latex_elements = {
 # (source start file, target name, title,
 #  author, documentclass [howto, manual, or own class]).
 latex_documents = [
-    (master_doc, 'Slat.tex', 'Slat Documentation',
+    (master_doc, 'Slat.tex', 'SLEUTH Automation Documentation',
      'Fidel Serrano, Rodrigo Garcia', 'manual'),
 ]
 
@@ -141,7 +141,7 @@ latex_documents = [
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
 man_pages = [
-    (master_doc, 'slat', 'Slat Documentation',
+    (master_doc, 'sleuth_automation', 'SLEUTH Automation Documentation',
      [author], 1)
 ]
 
@@ -152,8 +152,8 @@ man_pages = [
 # (source start file, target name, title, author,
 #  dir menu entry, description, category)
 texinfo_documents = [
-    (master_doc, 'Slat', 'Slat Documentation',
-     author, 'Slat', 'One line description of project.',
+    (master_doc, 'SLEUTH Automation', 'SLEUTH Automation Documentation',
+     author, 'SLEUTH AUtomation', 'Python wrapper for SLEUTH.',
      'Miscellaneous'),
 ]
 
