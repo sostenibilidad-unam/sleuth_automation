@@ -3,7 +3,7 @@ import pandas
 
 class ControlStats:
     """
-    This class grabs values from the control_stats.log and calculates ranges for the paraemters:
+    This class grabs values from the control_stats.log and calculates ranges for the parameters for next calibration stage:
     - diff
     - brd
     - sprd
