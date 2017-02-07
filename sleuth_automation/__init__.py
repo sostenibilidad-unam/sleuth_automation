@@ -18,12 +18,27 @@ class Location:
         self.predict_start = predict_start
         self.predict_end = predict_end
         self.dates = dates
+        self.create_dir(output_path)
+        self.create_dir(os.path.join(output_path, 'coarse'))
+        self.create_dir(os.path.join(output_path, 'fine'))
+        self.create_dir(os.path.join(output_path, 'final'))                
+        self.validate_input_path()
 
-        self.validate_path()
+    def create_dir(self, path):
+         if not os.path.exists(path):
+            os.mkdir(path, 0755) # pito
         
-    def validate_path(self):
-        pass
-   
+    def validate_input_path(self):
+        assert os.path.isdir(self.input_path)
+        for date in self.dates:
+            assert os.path.isfile("%s.urban.%s.gif" % (self.location, date))
+            assert os.path.isfile("%s.roads.%s.gif" % (self.location, date))
+        assert os.path.isfile(os.path.join(self.input_path, "%s.hillshade.gif" % self.location))
+        assert os.path.isfile(os.path.join(self.input_path, "%s.slope.gif" % self.location))        
+        assert os.path.isfile(os.path.join(self.input_path, "%s.excluded.gif" % self.location))
+
+        
+           
     def create_scenario_file(self, params, monte_carlo_iterations):
         
         env = Environment(loader=PackageLoader('sleuth_automation', 'templates'))
