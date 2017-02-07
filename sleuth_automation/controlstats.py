@@ -23,11 +23,8 @@ class ControlStats:
             primeros10 = df.sort_values(by = 'Leesalee', ascending = False)[:10]
             best_fit = df.sort_values(by = 'Leesalee', ascending = False)[:1]
 
-<<<<<<< HEAD
+
             diff = int(best_fit['Diff'].values[0])
-=======
-            diff = int(best_fit['Diff'].values[0])    
->>>>>>> d73f007de267e4c987e89510d0044ee86cc70722
             diff_max = primeros10['Diff'].max()
             diff_start = self.start(primeros10['Diff'].min(), diff_max)
             diff_step = self.step(diff_max, diff_start)
@@ -39,21 +36,13 @@ class ControlStats:
             brd_step = self.step(brd_max, brd_start)
             brd_end = self.end(brd_start, brd_step)
 
-<<<<<<< HEAD
-            sprd = int(best_fit['Sprd'].values[0])
-=======
             sprd = int(best_fit['Sprd'].values[0])    
->>>>>>> d73f007de267e4c987e89510d0044ee86cc70722
             sprd_max = primeros10['Sprd'].max()
             sprd_start = self.start(primeros10['Sprd'].min(), sprd_max)
             sprd_step = self.step(sprd_max, sprd_start)
             sprd_end = self.end(sprd_start, sprd_step)
 
-<<<<<<< HEAD
             slp = int(best_fit['Slp'].values[0])
-=======
-            slp = int(best_fit['Slp'].values[0])   
->>>>>>> d73f007de267e4c987e89510d0044ee86cc70722
             slp_max = primeros10['Slp'].max()
             slp_start = self.start(primeros10['Slp'].min(), slp_max)
             slp_step = self.step(slp_max, slp_start)
