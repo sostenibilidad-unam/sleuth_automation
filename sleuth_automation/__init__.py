@@ -15,8 +15,8 @@ class Location:
         self.location = location
         self.input_path = input_path
         self.output_path = output_path        
-        self.predict_start = start
-        self.predict_end = end
+        self.predict_start = predict_start
+        self.predict_end = predict_end
         self.dates = dates
 
         self.validate_path()
@@ -29,8 +29,8 @@ class Location:
         env = Environment(loader=PackageLoader('sleuth_automation', 'templates'))
         template = env.get_template('scenario.jinja')
 
-        arguments = { 'input_dir': self.input_dir + "/",
-                      'output_dir': self.output_dir + "/",
+        arguments = { 'input_dir': self.input_path + "/",
+                      'output_dir': self.output_path + "/",
                       'monte_carlo_iterations': monte_carlo_iterations,
                       'predict_start': self.predict_start,
                       'predict_end': self.predict_end,
@@ -42,7 +42,7 @@ class Location:
                       }
 
         arguments.update(params)
-        template.render(arguments)        
+        return template.render(arguments)        
 
 
     def calibrate_coarse(self):
@@ -69,7 +69,7 @@ class Location:
                          'rg_start': 0,
                          'rg_step': 25,
                          'rg_end': 100 }
-        self.create_scenario_file(coarse_params, 50)
+        return self.create_scenario_file(coarse_params, 50)
 
     def calibrate_fine(self):
         cs = ControlStats(os.path.join(os.path.join(self.output_path, 'coarse'), 'control_stats.log'))
