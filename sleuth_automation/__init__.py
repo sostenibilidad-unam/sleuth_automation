@@ -31,8 +31,8 @@ class Location:
     def validate_input_path(self):
         assert os.path.isdir(self.input_path)
         for date in self.dates:
-            assert os.path.isfile("%s.urban.%s.gif" % (self.location, date))
-            assert os.path.isfile("%s.roads.%s.gif" % (self.location, date))
+            assert os.path.isfile(os.path.join(self.input_path,"%s.urban.%s.gif" % (self.location, date)))
+            assert os.path.isfile(os.path.join(self.input_path, "%s.roads.%s.gif" % (self.location, date)))
         assert os.path.isfile(os.path.join(self.input_path, "%s.hillshade.gif" % self.location))
         assert os.path.isfile(os.path.join(self.input_path, "%s.slope.gif" % self.location))        
         assert os.path.isfile(os.path.join(self.input_path, "%s.excluded.gif" % self.location))
