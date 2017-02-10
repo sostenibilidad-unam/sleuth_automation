@@ -26,6 +26,6 @@ def test_param_interpolation_satans_flavor():
                      'rg_step': 666,
                      'rg_end': 666 }
 
-    s = slaut.Location('Group22', '/path/i', '/path/o', 2001, 2060, [1980,1990,2000])
+    s = slaut.Location('Group22', 'tests/Group22', 'tests/Group22/output', 2001, 2060, [1980,1990,2000])
     with open('tests/satans.scenario') as f:
         assert s.create_scenario_file(satans_params, 666) == f.read()

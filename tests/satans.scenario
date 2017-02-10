@@ -1,5 +1,5 @@
-INPUT_DIR= /path/i/
-OUTPUT_DIR= /path/o/
+INPUT_DIR= tests/Group22/
+OUTPUT_DIR= tests/Group22/output/
 WHIRLGIF_BINARY= /srv/home/fidel/sleuth/Whirlgif/whirlgif 
 ECHO(YES/NO)= yes 
 WRITE_COEFF_FILE(YES/NO)= yes
@@ -68,11 +68,11 @@ ROAD_DATA= Group22.roads.1990.gif
 ROAD_DATA= Group22.roads.2000.gif
 
 
-EXCLUDED_DATA= /path/i/Group22.excluded.gif
+EXCLUDED_DATA= tests/Group22/Group22.excluded.gif
 
-SLOPE_DATA= /path/i/Group22.slope.gif
+SLOPE_DATA= tests/Group22/Group22.slope.gif
 
-BACKGROUND_DATA= /path/i/Group22.hillshade.gif
+BACKGROUND_DATA= tests/Group22/Group22.hillshade.gif
 
 WRITE_COLOR_KEY_IMAGES(YES/NO)= no 
 ECHO_IMAGE_FILES(YES/NO)= no
