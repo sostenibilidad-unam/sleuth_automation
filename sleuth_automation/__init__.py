@@ -4,7 +4,7 @@ from controlstats import ControlStats
 
 class Location:
 
-    def __init__(self, location, input_path, output_path, predict_start, predict_end, dates):
+    def __init__(self, location, input_path, output_path, predict_start, predict_end, dates, sleuth_path):
         """
         location is a name for the location according to sleuth docs
         path is a path to the location directory
@@ -23,10 +23,11 @@ class Location:
         self.create_dir(os.path.join(output_path, 'fine'))
         self.create_dir(os.path.join(output_path, 'final'))                
         self.validate_input_path()
+        self.whirlgif_binary = os.path.join(os.path.join(sleuth_path, "Whirlgif"), 'whirlgif' )
 
     def create_dir(self, path):
          if not os.path.exists(path):
-            os.mkdir(path, 0755) # pito
+            os.mkdir(path, 0755)
         
     def validate_input_path(self):
         assert os.path.isdir(self.input_path)
@@ -44,7 +45,8 @@ class Location:
         env = Environment(loader=PackageLoader('sleuth_automation', 'templates'))
         template = env.get_template('scenario.jinja')
 
-        arguments = { 'input_dir': self.input_path + "/",
+        arguments = { 'whirlgif_binary': self.whirlgif_binary,
+                      'input_dir': self.input_path + "/",
                       'output_dir': self.output_path + "/",
                       'monte_carlo_iterations': monte_carlo_iterations,
                       'predict_start': self.predict_start,
