@@ -1,0 +1,10 @@
+executable = calibrate_region.sh
+request_cpus = 40
+
+{% for region in list_of_regions %}
+Arguments = {{region.name}} {{region.path}} {{predict_start}} {{predict_end}} {{whirlgif_path}} {{grow_path}} 
+Error = {{region.name}}.err
+Output = {{region.name}}.out
+Log = {{region.name}}.log
+Queue
+{% endfor %}
