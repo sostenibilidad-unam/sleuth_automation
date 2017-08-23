@@ -1,15 +1,18 @@
 from math import floor
 import pandas
 
+
 class ControlStats:
     """
-    This class grabs values from the control_stats.log and calculates ranges for the parameters for next calibration stage:
+    This class grabs values from the control_stats.log and calculates
+    ranges for the parameters for next calibration stage:
     - diff
     - brd
     - sprd
     - slp
     - rg
     """
+
     def __init__(self, path, step):
         """
         input path to control_stats.log
@@ -18,11 +21,10 @@ class ControlStats:
         self.default_step = step
         self.params = {}
         with open(path) as controlstats:
-            widths = [7,8,8,8,8,8,8,8,8,8,8,8,8,8,5,5,5,5,5]
-            df = pandas.read_fwf(controlstats, skiprows = 1, widths = widths)
-            primeros10 = df.sort_values(by = 'Leesalee', ascending = False)[:10]
-            best_fit = df.sort_values(by = 'Leesalee', ascending = False)[:1]
-
+            widths = [7, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 5, 5, 5, 5, 5]
+            df = pandas.read_fwf(controlstats, skiprows=1, widths=widths)
+            primeros10 = df.sort_values(by='Leesalee', ascending=False)[:10]
+            best_fit = df.sort_values(by='Leesalee', ascending=False)[:1]
 
             diff = int(best_fit['Diff'].values[0])
             diff_max = primeros10['Diff'].max()
@@ -36,7 +38,7 @@ class ControlStats:
             brd_step = self.step(brd_max, brd_start)
             brd_end = self.end(brd_start, brd_step)
 
-            sprd = int(best_fit['Sprd'].values[0])    
+            sprd = int(best_fit['Sprd'].values[0])
             sprd_max = primeros10['Sprd'].max()
             sprd_start = self.start(primeros10['Sprd'].min(), sprd_max)
             sprd_step = self.step(sprd_max, sprd_start)
@@ -54,31 +56,30 @@ class ControlStats:
             rg_step = self.step(rg_max, rg_start)
             rg_end = self.end(rg_start, rg_step)
 
-            self.params = { 'diff': diff,
-                            'diff_start': diff_start,
-                            'diff_step': diff_step,
-                            'diff_end': diff_end,
+            self.params = {'diff': diff,
+                           'diff_start': diff_start,
+                           'diff_step': diff_step,
+                           'diff_end': diff_end,
 
-                            'brd': brd,
-                            'brd_start': brd_start,
-                            'brd_step': brd_step,
-                            'brd_end': brd_end,
+                           'brd': brd,
+                           'brd_start': brd_start,
+                           'brd_step': brd_step,
+                           'brd_end': brd_end,
 
-                            'sprd': sprd,
-                            'sprd_start': sprd_start,
-                            'sprd_step': sprd_step,
-                            'sprd_end': sprd_end,
+                           'sprd': sprd,
+                           'sprd_start': sprd_start,
+                           'sprd_step': sprd_step,
+                           'sprd_end': sprd_end,
 
-                            'slp': slp,
-                            'slp_start': slp_start,
-                            'slp_step': slp_step,
-                            'slp_end': slp_end,
+                           'slp': slp,
+                           'slp_start': slp_start,
+                           'slp_step': slp_step,
+                           'slp_end': slp_end,
 
-                            'rg': rg,
-                            'rg_start': rg_start,
-                            'rg_step': rg_step,
-                            'rg_end': rg_end }
-
+                           'rg': rg,
+                           'rg_start': rg_start,
+                           'rg_step': rg_step,
+                           'rg_end': rg_end}
 
     def step(self, Max, Start):
         if Max == 1:

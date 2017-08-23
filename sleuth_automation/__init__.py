@@ -2,71 +2,111 @@ import os
 from jinja2 import Environment, PackageLoader
 from controlstats import ControlStats
 
+config = {}
+
+
+def configure(sleuth_path):
+    config['sleuth_path'] = sleuth_path
+    config['whirlgif_binary'] = os.path.join(os.path.join(sleuth_path,
+                                                          "Whirlgif"),
+                                             'whirlgif')
+    config['grow_binary'] = os.path.join(sleuth_path,
+                                         "grow")
+
+
 class Location:
 
-    def __init__(self, location, input_path, output_path, predict_start, predict_end, dates, sleuth_path):
+    def __init__(self, location, input_path):
         """
         location is a name for the location according to sleuth docs
         path is a path to the location directory
         start and end enclose the temporal range for prediction
-        dates is a list of years which are part of the .GIF filenames in the input data
-        
+        dates is a list of years which are part of the .GIF
+        filenames in the input data
         """
+
+        assert len(config.keys()) > 0
+
         self.location = location
         self.input_path = input_path
-        self.output_path = output_path        
-        self.predict_start = predict_start
-        self.predict_end = predict_end
-        self.dates = dates
-        self.create_dir(output_path)
-        self.create_dir(os.path.join(output_path, 'coarse'))
-        self.create_dir(os.path.join(output_path, 'fine'))
-        self.create_dir(os.path.join(output_path, 'final'))                
-        self.validate_input_path()
-        self.whirlgif_binary = os.path.join(os.path.join(sleuth_path, "Whirlgif"), 'whirlgif' )
+        self.output_path = os.path.join(input_path, 'out')
+        self.create_dir(self.output_path)
+        # self.validate_input_path()
+
+        self.urban_layers = []
+        self.roads_layers = []
+        for thisFile in os.listdir(input_path):
+            if thisFile.endswith('.gif') and not thisFile.startswith("."):
+                if ".urban." in thisFile:
+                    self.urban_layers.append(thisFile)
+                if ".roads." in thisFile:
+                    self.roads_layers.append(thisFile)
+                if ".slope." in thisFile:
+                    self.slope_layer = thisFile
+                if ".hillshade." in thisFile:
+                    self.hillshade_layer = thisFile
+                if ".excluded." in thisFile:
+                    self.exclusion_layer = thisFile
+        self.urban_layers.sort()
+        self.roads_layers.sort()
+
+        # predict start and end must be in scenario files, tho ignored
+        # in calibration stages
+        self.predict_start = self.urban_layers[-1].split('.')[-2]
+        self.predict_end = int(self.predict_start)+1
+
+        self.env = Environment(loader=PackageLoader('sleuth_automation',
+                                                    'templates'))
 
     def create_dir(self, path):
-         if not os.path.exists(path):
+        if not os.path.exists(path):
             os.mkdir(path, 0755)
-        
-    def validate_input_path(self):
-        assert os.path.isdir(self.input_path)
-        for date in self.dates:
-            assert os.path.isfile(os.path.join(self.input_path,"%s.urban.%s.gif" % (self.location, date)))
-            assert os.path.isfile(os.path.join(self.input_path, "%s.roads.%s.gif" % (self.location, date)))
-        assert os.path.isfile(os.path.join(self.input_path, "%s.hillshade.gif" % self.location))
-        assert os.path.isfile(os.path.join(self.input_path, "%s.slope.gif" % self.location))        
-        assert os.path.isfile(os.path.join(self.input_path, "%s.excluded.gif" % self.location))
 
-        
-           
+    # def validate_input_path(self):
+    #     assert os.path.isdir(self.input_path)
+    #     for date in self.dates:
+    #         assert os.path.isfile(os.path.join(self.input_path,
+    #                                            "%s.urban.%s.gif" %
+    #                                            (self.location, date)))
+    #         assert os.path.isfile(os.path.join(self.input_path,
+    #                                            "%s.roads.%s.gif" %
+    #                                            (self.location, date)))
+    #     assert os.path.isfile(os.path.join(self.input_path,
+    #                                     "%s.hillshade.gif" % self.location))
+    #     assert os.path.isfile(os.path.join(self.input_path,
+    #                                        "%s.slope.gif" % self.location))
+    #     assert os.path.isfile(os.path.join(self.input_path,
+    #                                     "%s.excluded.gif" % self.location))
+
     def create_scenario_file(self, params, monte_carlo_iterations):
-        
-        env = Environment(loader=PackageLoader('sleuth_automation', 'templates'))
-        template = env.get_template('scenario.jinja')
 
-        arguments = { 'whirlgif_binary': self.whirlgif_binary,
-                      'input_dir': self.input_path + "/",
-                      'output_dir': self.output_path + "/",
-                      'monte_carlo_iterations': monte_carlo_iterations,
-                      'predict_start': self.predict_start,
-                      'predict_end': self.predict_end,
-                      'urban' : ["%s.urban.%s.gif" % (self.location, date) for date in self.dates],
-                      'roads': ["%s.roads.%s.gif" % (self.location, date) for date in self.dates],
-                      'exclude': os.path.join(self.input_path, "%s.excluded.gif" % self.location),
-                      'slope': os.path.join(self.input_path, "%s.slope.gif" % self.location),
-                      'hillshade': os.path.join(self.input_path, "%s.hillshade.gif" % self.location),
-                      }
+        template = self.env.get_template('scenario.jinja')
+
+        arguments = {'whirlgif_binary': config['whirlgif_binary'],
+                     'input_dir': self.input_path + "/",
+                     'output_dir': self.output_path + "/",
+                     'monte_carlo_iterations': monte_carlo_iterations,
+
+                     'urban': self.urban_layers,
+                     'roads': self.roads_layers,
+
+                     'exclude': self.exclusion_layer,
+                     'slope': self.slope_layer,
+                     'hillshade': self.hillshade_layer,
+
+                     'predict_start': self.predict_start,
+                     'predict_end': self.predict_end}
 
         arguments.update(params)
-        return template.render(arguments)        
+        return template.render(arguments)
 
-
-    def calibrate_coarse(self):
+    def calibrate_coarse(self, monte_carlo_iterations=50):
+        self.create_dir(os.path.join(self.output_path, 'coarse'))
         coarse_params = {'diff': 50,
                          'diff_start': 0,
                          'diff_step': 25,
                          'diff_end': 100,
+
                          'brd': 50,
                          'brd_start': 0,
                          'brd_step': 25,
@@ -85,31 +125,56 @@ class Location:
                          'rg': 50,
                          'rg_start': 0,
                          'rg_step': 25,
-                         'rg_end': 100 }
-        return self.create_scenario_file(coarse_params, 50)
+                         'rg_end': 100}
+        return self.create_scenario_file(coarse_params, monte_carlo_iterations)
 
-    def calibrate_fine(self):
-        cs = ControlStats(os.path.join(os.path.join(self.output_path, 'coarse'), 'control_stats.log'))
-        self.create_scenario_file(cs.params, 5)
-        
-    def calibrate_final(self):
-        cs = ControlStats(os.path.join(os.path.join(self.output_path, 'fine'), 'control_stats.log'))
-        self.create_scenario_file(cs.params, 1)
+    def calibrate_fine(self, monte_carlo_iterations=50):
+        self.create_dir(os.path.join(self.output_path, 'fine'))
+        default_step = 5
+        cs = ControlStats(os.path.join(os.path.join(self.output_path,
+                                                    'coarse'),
+                                       'control_stats.log'), default_step)
+        return self.create_scenario_file(cs.params, monte_carlo_iterations)
 
-    def sleuth_calibrate(self, scenario_file_path, monte_carlo_iterations=5):
+    def calibrate_final(self, monte_carlo_iterations=50):
+        self.create_dir(os.path.join(self.output_path, 'final'))
+        default_step = 1
+        cs = ControlStats(os.path.join(os.path.join(self.output_path,
+                                                    'fine'),
+                                       'control_stats.log'), default_step)
+        return self.create_scenario_file(cs.params, monte_carlo_iterations)
+
+    def sleuth_calibrate(self, scenario_file_path):
         self.calibrate_coarse()
         self.calibrate_fine()
         self.calibrate_final()
 
-                
-    def sleuth_predict(self, scenario_file_path, monte_carlo_iterations=150):
-        passself.create_scenario_file('predict', monte_carlo_iterations)
-    
+    def sleuth_predict(self,
+                       start, end,
+                       diff=None, brd=None, sprd=None, slp=None, rg=None,
+                       monte_carlo_iterations=150):
+        self.predict_start = start
+        self.predict_end = end
 
-    def predict(self):
-        pass
+        default_step = 1  # ignored for predict
+        cs = ControlStats(os.path.join(os.path.join(self.output_path,
+                                                    'final'),
+                                       'control_stats.log'), default_step)
 
+        if diff:
+            cs['diff'] = diff
 
+        if brd:
+            cs['brd'] = brd
 
+        if sprd:
+            cs['sprd'] = sprd
 
+        if slp:
+            cs['slp'] = slp
 
+        if rg:
+            cs['rg'] = rg
+
+        return self.create_scenario_file(cs.params,
+                                         monte_carlo_iterations)
