@@ -33,7 +33,7 @@ list_of_regions = []
 for thisFile in os.listdir(args.locations_dir):
     if os.path.isdir(join(args.locations_dir, thisFile)):
         list_of_regions.append({"name": thisFile,
-                                "path": abspath(join(args.locations_dir, thisFile))})
+                                "path": abspath(join(args.locations_dir, thisFile)) + '/'})
 
 template = env.get_template("sleuth_template.condor")
 

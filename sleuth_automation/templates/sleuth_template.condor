@@ -1,5 +1,7 @@
 executable = {{ executable }}
 
+getenv = True
+
 {% if mpi_cores > 0 %}
 request_cpus = {{ mpi_cores }}
 {% else %}
