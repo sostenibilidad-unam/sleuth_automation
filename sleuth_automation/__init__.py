@@ -2,13 +2,15 @@ import os
 from jinja2 import Environment, PackageLoader
 from controlstats import ControlStats
 from sh import bash
+from sh import mpirun
 
 config = {}
 
 
-def configure(sleuth_path, use_mpi=False):
+def configure(sleuth_path, use_mpi=False, mpi_cores=40):
     config['sleuth_path'] = sleuth_path
     config['use_mpi'] = use_mpi
+    config['mpi_cores'] = mpi_cores
     config['whirlgif_binary'] = os.path.join(os.path.join(sleuth_path,
                                                           "Whirlgif"),
                                              'whirlgif')
@@ -122,8 +124,15 @@ class Location:
             f.write(self.create_scenario_file(coarse_params,
                                               monte_carlo_iterations))
 
-        bash('-c', "%s calibrate %s" % (config['grow_binary'],
-                                        scenario_file_path))
+        if config['use_mpi']:
+            mpirun('-np',
+                   config['mpi_cores'],
+                   config['grow_binary'],
+                   'calibrate',
+                   scenario_file_path)
+        else:
+            bash('-c', "%s calibrate %s" % (config['grow_binary'],
+                                            scenario_file_path))
 
     def calibrate_fine(self, monte_carlo_iterations=50):
 
@@ -140,7 +149,14 @@ class Location:
             scenario_file_path = f.name            
             f.write(self.create_scenario_file(cs.params,
                                               monte_carlo_iterations))
-        bash('-c', "%s calibrate %s" % (config['grow_binary'],
+        if config['use_mpi']:
+            mpirun('-np',
+                   config['mpi_cores'],
+                   config['grow_binary'],
+                   'calibrate',
+                   scenario_file_path)
+        else:
+            bash('-c', "%s calibrate %s" % (config['grow_binary'],
                                         scenario_file_path))
             
 
@@ -159,7 +175,15 @@ class Location:
             scenario_file_path = f.name            
             f.write(self.create_scenario_file(cs.params,
                                               monte_carlo_iterations))
-        bash('-c', "%s calibrate %s" % (config['grow_binary'],
+
+        if config['use_mpi']:
+            mpirun('-np',
+                   config['mpi_cores'],
+                   config['grow_binary'],
+                   'calibrate',
+                   scenario_file_path)
+        else:
+            bash('-c', "%s calibrate %s" % (config['grow_binary'],
                                         scenario_file_path))
             
 
@@ -205,5 +229,13 @@ class Location:
             scenario_file_path = f.name            
             f.write(self.create_scenario_file(cs.params,
                                               monte_carlo_iterations))
-        bash('-c', "%s predict %s" % (config['grow_binary'],
+
+        if config['use_mpi']:
+            mpirun('-np',
+                   config['mpi_cores'],
+                   config['grow_binary'],
+                   'predict',
+                   scenario_file_path)
+        else:
+            bash('-c', "%s predict %s" % (config['grow_binary'],
                                       scenario_file_path))
