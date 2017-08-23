@@ -5,8 +5,9 @@ from controlstats import ControlStats
 config = {}
 
 
-def configure(sleuth_path):
+def configure(sleuth_path, use_mpi=False):
     config['sleuth_path'] = sleuth_path
+    config['use_mpi'] = use_mpi
     config['whirlgif_binary'] = os.path.join(os.path.join(sleuth_path,
                                                           "Whirlgif"),
                                              'whirlgif')
@@ -126,7 +127,10 @@ class Location:
                          'rg_start': 0,
                          'rg_step': 25,
                          'rg_end': 100}
-        return self.create_scenario_file(coarse_params, monte_carlo_iterations)
+        with open(os.path.join(self.output_path,
+                               'scenario.%s.coarse' % self.location), 'w') as f:
+            f.write(self.create_scenario_file(coarse_params,
+                                              monte_carlo_iterations))
 
     def calibrate_fine(self, monte_carlo_iterations=50):
         self.create_dir(os.path.join(self.output_path, 'fine'))
@@ -134,7 +138,11 @@ class Location:
         cs = ControlStats(os.path.join(os.path.join(self.output_path,
                                                     'coarse'),
                                        'control_stats.log'), default_step)
-        return self.create_scenario_file(cs.params, monte_carlo_iterations)
+
+        with open(os.path.join(self.output_path,
+                               'scenario.%s.fine' % self.location), 'w') as f:
+            f.write(self.create_scenario_file(cs.params,
+                                              monte_carlo_iterations))
 
     def calibrate_final(self, monte_carlo_iterations=50):
         self.create_dir(os.path.join(self.output_path, 'final'))
@@ -142,7 +150,11 @@ class Location:
         cs = ControlStats(os.path.join(os.path.join(self.output_path,
                                                     'fine'),
                                        'control_stats.log'), default_step)
-        return self.create_scenario_file(cs.params, monte_carlo_iterations)
+
+        with open(os.path.join(self.output_path,
+                               'scenario.%s.final' % self.location), 'w') as f:
+            f.write(self.create_scenario_file(cs.params,
+                                              monte_carlo_iterations))
 
     def sleuth_calibrate(self, scenario_file_path):
         self.calibrate_coarse()
@@ -162,19 +174,22 @@ class Location:
                                        'control_stats.log'), default_step)
 
         if diff:
-            cs['diff'] = diff
+            cs.params['diff'] = diff
 
         if brd:
-            cs['brd'] = brd
+            cs.params['brd'] = brd
 
         if sprd:
-            cs['sprd'] = sprd
+            cs.params['sprd'] = sprd
 
         if slp:
-            cs['slp'] = slp
+            cs.params['slp'] = slp
 
         if rg:
-            cs['rg'] = rg
+            cs.params['rg'] = rg
 
-        return self.create_scenario_file(cs.params,
-                                         monte_carlo_iterations)
+        with open(os.path.join(self.output_path,
+                               'scenario.%s.predict' % self.location),
+                  'w') as f:
+            f.write(self.create_scenario_file(cs.params,
+                                              monte_carlo_iterations))
