@@ -2,7 +2,10 @@ import os
 from jinja2 import Environment, PackageLoader
 from controlstats import ControlStats
 from sh import bash
-from sh import mpirun
+try:
+    from sh import mpirun
+except:
+    pass
 
 config = {}
 

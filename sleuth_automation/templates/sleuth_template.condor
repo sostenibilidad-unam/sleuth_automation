@@ -1,0 +1,24 @@
+executable = {{ executable }}
+
+{% if mpi_cores > 0 %}
+request_cpus = {{ mpi_cores }}
+{% else %}
+request_cpus = 1
+{% endif %}
+
+{% for region in list_of_regions %}
+
+Arguments = --sleuth_path {{sleuth_path}} \
+  --location_dir {{region.path}} \
+  --location_name {{region.name}} \
+  --mpi_cores {{ mpi_cores }} \
+  --predict_start {{ predict_start }} \
+  --predict_end {{ predict_end }} {% if virtualenv %}--virtualenv {{ virtualenv }} {% endif %}
+
+Error = {{region.name}}.err
+Output = {{region.name}}.out
+Log = {{region.name}}.log
+
+Queue
+
+{% endfor %}
