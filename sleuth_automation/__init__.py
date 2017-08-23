@@ -126,28 +126,42 @@ class Location:
                                         scenario_file_path))
 
     def calibrate_fine(self, monte_carlo_iterations=50):
-        self.create_dir(os.path.join(self.output_path, 'fine'))
+
+        fine_dir = os.path.join(self.output_path, 'fine')
+        self.create_dir(fine_dir)
         default_step = 5
+        
         cs = ControlStats(os.path.join(os.path.join(self.output_path,
                                                     'coarse'),
                                        'control_stats.log'), default_step)
-
+        cs.params['output_dir'] = fine_dir + '/'
         with open(os.path.join(self.output_path,
                                'scenario.%s.fine' % self.location), 'w') as f:
+            scenario_file_path = f.name            
             f.write(self.create_scenario_file(cs.params,
                                               monte_carlo_iterations))
+        bash('-c', "%s calibrate %s" % (config['grow_binary'],
+                                        scenario_file_path))
+            
 
     def calibrate_final(self, monte_carlo_iterations=50):
-        self.create_dir(os.path.join(self.output_path, 'final'))
+
+        final_dir = os.path.join(self.output_path, 'final')
+        self.create_dir(final_dir)
         default_step = 1
+        
         cs = ControlStats(os.path.join(os.path.join(self.output_path,
                                                     'fine'),
                                        'control_stats.log'), default_step)
-
+        cs.params['output_dir'] = final_dir + '/'
         with open(os.path.join(self.output_path,
                                'scenario.%s.final' % self.location), 'w') as f:
+            scenario_file_path = f.name            
             f.write(self.create_scenario_file(cs.params,
                                               monte_carlo_iterations))
+        bash('-c', "%s calibrate %s" % (config['grow_binary'],
+                                        scenario_file_path))
+            
 
     def sleuth_calibrate(self):
         self.calibrate_coarse()
@@ -161,11 +175,15 @@ class Location:
         self.predict_start = start
         self.predict_end = end
 
+        predict_dir = os.path.join(self.output_path, 'predict')
+        self.create_dir(predict_dir)
+        
         default_step = 1  # ignored for predict
         cs = ControlStats(os.path.join(os.path.join(self.output_path,
                                                     'final'),
                                        'control_stats.log'), default_step)
-
+        cs.params['output_dir'] = predict_dir + '/'
+        
         if diff:
             cs.params['diff'] = diff
 
@@ -184,5 +202,8 @@ class Location:
         with open(os.path.join(self.output_path,
                                'scenario.%s.predict' % self.location),
                   'w') as f:
+            scenario_file_path = f.name            
             f.write(self.create_scenario_file(cs.params,
                                               monte_carlo_iterations))
+        bash('-c', "%s predict %s" % (config['grow_binary'],
+                                      scenario_file_path))
