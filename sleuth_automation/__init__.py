@@ -1,6 +1,7 @@
 import os
 from jinja2 import Environment, PackageLoader
 from controlstats import ControlStats
+from sh import bash
 
 config = {}
 
@@ -63,22 +64,6 @@ class Location:
         if not os.path.exists(path):
             os.mkdir(path, 0755)
 
-    # def validate_input_path(self):
-    #     assert os.path.isdir(self.input_path)
-    #     for date in self.dates:
-    #         assert os.path.isfile(os.path.join(self.input_path,
-    #                                            "%s.urban.%s.gif" %
-    #                                            (self.location, date)))
-    #         assert os.path.isfile(os.path.join(self.input_path,
-    #                                            "%s.roads.%s.gif" %
-    #                                            (self.location, date)))
-    #     assert os.path.isfile(os.path.join(self.input_path,
-    #                                     "%s.hillshade.gif" % self.location))
-    #     assert os.path.isfile(os.path.join(self.input_path,
-    #                                        "%s.slope.gif" % self.location))
-    #     assert os.path.isfile(os.path.join(self.input_path,
-    #                                     "%s.excluded.gif" % self.location))
-
     def create_scenario_file(self, params, monte_carlo_iterations):
 
         template = self.env.get_template('scenario.jinja')
@@ -128,9 +113,14 @@ class Location:
                          'rg_step': 25,
                          'rg_end': 100}
         with open(os.path.join(self.output_path,
-                               'scenario.%s.coarse' % self.location), 'w') as f:
+                               'scenario.%s.coarse' % self.location),
+                  'w') as f:
+            scenario_file_path = f.name
             f.write(self.create_scenario_file(coarse_params,
                                               monte_carlo_iterations))
+
+        bash('-c', "%s calibrate %s" % (config['grow_binary'],
+                                        scenario_file_path))
 
     def calibrate_fine(self, monte_carlo_iterations=50):
         self.create_dir(os.path.join(self.output_path, 'fine'))
@@ -156,7 +146,7 @@ class Location:
             f.write(self.create_scenario_file(cs.params,
                                               monte_carlo_iterations))
 
-    def sleuth_calibrate(self, scenario_file_path):
+    def sleuth_calibrate(self):
         self.calibrate_coarse()
         self.calibrate_fine()
         self.calibrate_final()
