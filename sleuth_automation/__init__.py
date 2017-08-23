@@ -69,8 +69,7 @@ class Location:
         template = self.env.get_template('scenario.jinja')
 
         arguments = {'whirlgif_binary': config['whirlgif_binary'],
-                     'input_dir': self.input_path + "/",
-                     'output_dir': self.output_path + "/",
+                     'input_dir': self.input_path,
                      'monte_carlo_iterations': monte_carlo_iterations,
 
                      'urban': self.urban_layers,
@@ -87,7 +86,8 @@ class Location:
         return template.render(arguments)
 
     def calibrate_coarse(self, monte_carlo_iterations=50):
-        self.create_dir(os.path.join(self.output_path, 'coarse'))
+        coarse_dir = os.path.join(self.output_path, 'coarse')
+        self.create_dir(coarse_dir)
         coarse_params = {'diff': 50,
                          'diff_start': 0,
                          'diff_step': 25,
@@ -111,7 +111,10 @@ class Location:
                          'rg': 50,
                          'rg_start': 0,
                          'rg_step': 25,
-                         'rg_end': 100}
+                         'rg_end': 100,
+
+                         'output_dir': coarse_dir + '/'}
+
         with open(os.path.join(self.output_path,
                                'scenario.%s.coarse' % self.location),
                   'w') as f:
