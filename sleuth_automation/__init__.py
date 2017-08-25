@@ -16,10 +16,10 @@ def configure(sleuth_path, use_mpi=False, mpi_cores=40):
     config['use_mpi'] = use_mpi
     config['mpi_cores'] = mpi_cores
     config['whirlgif_binary'] = join(join(sleuth_path,
-                                                          "Whirlgif"),
-                                             'whirlgif')
+                                          "Whirlgif"),
+                                     'whirlgif')
     config['grow_binary'] = join(sleuth_path,
-                                         "grow")
+                                 "grow")
 
 
 class Location:
@@ -122,7 +122,7 @@ class Location:
                          'output_dir': coarse_dir + '/'}
 
         with open(join(self.output_path,
-                               'scenario.%s.coarse' % self.location),
+                       'scenario.%s.coarse' % self.location),
                   'w') as f:
             scenario_file_path = f.name
             f.write(self.create_scenario_file(coarse_params,
@@ -145,14 +145,14 @@ class Location:
         fine_dir = join(self.output_path, 'fine')
         self.create_dir(fine_dir)
         default_step = 5
-        
+
         cs = ControlStats(join(join(self.output_path,
-                                                    'coarse'),
-                                       'control_stats.log'), default_step)
+                                    'coarse'),
+                               'control_stats.log'), default_step)
         cs.params['output_dir'] = fine_dir + '/'
         with open(join(self.output_path,
-                               'scenario.%s.fine' % self.location), 'w') as f:
-            scenario_file_path = f.name            
+                       'scenario.%s.fine' % self.location), 'w') as f:
+            scenario_file_path = f.name
             f.write(self.create_scenario_file(cs.params,
                                               monte_carlo_iterations))
         if config['use_mpi']:
@@ -165,22 +165,21 @@ class Location:
                    _err=join(fine_dir, 'mpi_err.log'))
         else:
             bash('-c', "%s calibrate %s" % (config['grow_binary'],
-                                        scenario_file_path))
-            
+                                            scenario_file_path))
 
     def calibrate_final(self, monte_carlo_iterations=50):
 
         final_dir = join(self.output_path, 'final')
         self.create_dir(final_dir)
         default_step = 1
-        
+
         cs = ControlStats(join(join(self.output_path,
-                                                    'fine'),
-                                       'control_stats.log'), default_step)
+                                    'fine'),
+                               'control_stats.log'), default_step)
         cs.params['output_dir'] = final_dir + '/'
         with open(join(self.output_path,
-                               'scenario.%s.final' % self.location), 'w') as f:
-            scenario_file_path = f.name            
+                       'scenario.%s.final' % self.location), 'w') as f:
+            scenario_file_path = f.name
             f.write(self.create_scenario_file(cs.params,
                                               monte_carlo_iterations))
 
@@ -194,8 +193,7 @@ class Location:
                    _err=join(final_dir, 'mpi_err.log'))
         else:
             bash('-c', "%s calibrate %s" % (config['grow_binary'],
-                                        scenario_file_path))
-            
+                                            scenario_file_path))
 
     def sleuth_calibrate(self):
         self.calibrate_coarse()
@@ -211,13 +209,13 @@ class Location:
 
         predict_dir = join(self.output_path, 'predict')
         self.create_dir(predict_dir)
-        
+
         default_step = 1  # ignored for predict
         cs = ControlStats(join(join(self.output_path,
-                                                    'final'),
-                                       'control_stats.log'), default_step)
+                                    'final'),
+                               'control_stats.log'), default_step)
         cs.params['output_dir'] = predict_dir + '/'
-        
+
         if diff:
             cs.params['diff'] = diff
 
@@ -234,9 +232,9 @@ class Location:
             cs.params['rg'] = rg
 
         with open(join(self.output_path,
-                               'scenario.%s.predict' % self.location),
+                       'scenario.%s.predict' % self.location),
                   'w') as f:
-            scenario_file_path = f.name            
+            scenario_file_path = f.name
             f.write(self.create_scenario_file(cs.params,
                                               monte_carlo_iterations))
 
@@ -250,4 +248,4 @@ class Location:
                    _err=join(predict_dir, 'mpi_err.log'))
         else:
             bash('-c', "%s predict %s" % (config['grow_binary'],
-                                      scenario_file_path))
+                                          scenario_file_path))
