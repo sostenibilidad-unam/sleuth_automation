@@ -2,12 +2,12 @@ Sleuth Automation
 =================
 
 This library is an object-oriented wrapper for the
-`SLEUTH urban growth model <http://www.ncgia.ucsb.edu/projects/gig/>`.
+`SLEUTH urban growth model <http://www.ncgia.ucsb.edu/projects/gig/>`_.
 
 It will automatically create scenario files from directories
-containing data layers and it can run simulations through `MPI
-<https://www.open-mpi.org/>` and `HT-Condor
-<https://research.cs.wisc.edu/htcondor/>`.
+containing data layers and it can run simulations through 
+`MPI <https://www.open-mpi.org/>`_ and 
+`HT-Condor <https://research.cs.wisc.edu/htcondor/>`_.
 
 Installation
 ------------
