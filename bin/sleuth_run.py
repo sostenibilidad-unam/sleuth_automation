@@ -18,6 +18,8 @@ parser.add_argument('--predict_start', type=int, required=True,
                     help='starting year of prediction interval')
 parser.add_argument('--predict_end', type=int, required=True,
                     help='ending year of prediction interval')
+parser.add_argument('--montecarlo_iterations', type=int, default=50,
+                    help='monte carlo iterations')
 parser.add_argument('--virtualenv', default=None,
                     help='path to python virtualenv')
 
@@ -39,9 +41,9 @@ else:
 l = sa.Location(args.location_name,
                 args.location_dir)
 
-l.calibrate_coarse()
-l.calibrate_fine()
-l.calibrate_final()
+l.calibrate_coarse(monte_carlo_iterations=args.montecarlo_iterations)
+l.calibrate_fine(monte_carlo_iterations=args.montecarlo_iterations)
+l.calibrate_final(monte_carlo_iterations=args.montecarlo_iterations)
 
 l.sleuth_predict(args.predict_start,
                  args.predict_end)

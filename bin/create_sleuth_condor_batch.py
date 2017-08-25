@@ -22,7 +22,8 @@ parser.add_argument('--predict_start', type=int, required=True,
                     help='starting year of prediction interval')
 parser.add_argument('--predict_end', type=int, required=True,
                     help='ending year of prediction interval')
-
+parser.add_argument('--montecarlo_iterations', type=int, default=50,
+                    help='monte carlo iterations')
 args = parser.parse_args()
 
 
@@ -44,5 +45,6 @@ with open(join(args.locations_dir, 'submit.condor'), 'w') as f:
                              'predict_end': args.predict_end,
                              'sleuth_path': args.sleuth_path,
                              'mpi_cores': args.mpi_cores,
+                             'montecarlo_iterations': args.montecarlo_iterations,
                              'virtualenv': os.environ.get('VIRTUAL_ENV',
                                                           None)}))

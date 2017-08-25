@@ -15,6 +15,7 @@ Arguments = --sleuth_path {{sleuth_path}} \
   --location_name {{region.name}} \
   --mpi_cores {{ mpi_cores }} \
   --predict_start {{ predict_start }} \
+  --montecarlo_iterations {{ montecarlo_iterations }} \
   --predict_end {{ predict_end }} {% if virtualenv %}--virtualenv {{ virtualenv }} {% endif %}
 
 Error = {{region.name}}.err
