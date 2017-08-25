@@ -26,7 +26,7 @@ Application Programming Interface
 
     import sleuth_automation as sa
 
-    # the library must be configure at least with the path to sleuth
+    # the library must be configured at least with the path to SLEUTH
     sa.configure(sleuth_path='/path/to/sleuth',
                  use_mpi=True, mpi_cores=32)
 
@@ -74,5 +74,5 @@ HT-Condor queue management system.
                                     --predict_start 2017 --predict_end 2050
 
 				  
-This will create a **submit.condor** file setup with the appropiate
-**sleuth_run.py** commands.
+This will create a **submit.condor** file in the locations directory,
+setup with the appropiate **sleuth_run.py** commands.
