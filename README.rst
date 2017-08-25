@@ -14,7 +14,9 @@ Installation
 
 You may install this library and helper scripts using pip.
 
-    pip install sleuth_automation
+.. code-block:: bash
+
+    $ pip install sleuth_automation
 
     
 Application Programming Interface
