@@ -1,4 +1,5 @@
 import os
+from os.path import join
 from jinja2 import Environment, PackageLoader
 from controlstats import ControlStats
 from sh import bash
@@ -14,10 +15,10 @@ def configure(sleuth_path, use_mpi=False, mpi_cores=40):
     config['sleuth_path'] = sleuth_path
     config['use_mpi'] = use_mpi
     config['mpi_cores'] = mpi_cores
-    config['whirlgif_binary'] = os.path.join(os.path.join(sleuth_path,
+    config['whirlgif_binary'] = join(join(sleuth_path,
                                                           "Whirlgif"),
                                              'whirlgif')
-    config['grow_binary'] = os.path.join(sleuth_path,
+    config['grow_binary'] = join(sleuth_path,
                                          "grow")
 
 
@@ -36,7 +37,7 @@ class Location:
 
         self.location = location
         self.input_path = input_path
-        self.output_path = os.path.join(input_path, 'out')
+        self.output_path = join(input_path, 'out')
         self.create_dir(self.output_path)
         # self.validate_input_path()
 
@@ -91,7 +92,7 @@ class Location:
         return template.render(arguments)
 
     def calibrate_coarse(self, monte_carlo_iterations=50):
-        coarse_dir = os.path.join(self.output_path, 'coarse')
+        coarse_dir = join(self.output_path, 'coarse')
         self.create_dir(coarse_dir)
         coarse_params = {'diff': 50,
                          'diff_start': 0,
@@ -120,7 +121,7 @@ class Location:
 
                          'output_dir': coarse_dir + '/'}
 
-        with open(os.path.join(self.output_path,
+        with open(join(self.output_path,
                                'scenario.%s.coarse' % self.location),
                   'w') as f:
             scenario_file_path = f.name
@@ -132,22 +133,24 @@ class Location:
                    config['mpi_cores'],
                    config['grow_binary'],
                    'calibrate',
-                   scenario_file_path)
+                   scenario_file_path,
+                   _out=join(coarse_dir, 'mpi_out.log'),
+                   _err=join(coarse_dir, 'mpi_err.log'))
         else:
             bash('-c', "%s calibrate %s" % (config['grow_binary'],
                                             scenario_file_path))
 
     def calibrate_fine(self, monte_carlo_iterations=50):
 
-        fine_dir = os.path.join(self.output_path, 'fine')
+        fine_dir = join(self.output_path, 'fine')
         self.create_dir(fine_dir)
         default_step = 5
         
-        cs = ControlStats(os.path.join(os.path.join(self.output_path,
+        cs = ControlStats(join(join(self.output_path,
                                                     'coarse'),
                                        'control_stats.log'), default_step)
         cs.params['output_dir'] = fine_dir + '/'
-        with open(os.path.join(self.output_path,
+        with open(join(self.output_path,
                                'scenario.%s.fine' % self.location), 'w') as f:
             scenario_file_path = f.name            
             f.write(self.create_scenario_file(cs.params,
@@ -157,7 +160,9 @@ class Location:
                    config['mpi_cores'],
                    config['grow_binary'],
                    'calibrate',
-                   scenario_file_path)
+                   scenario_file_path,
+                   _out=join(fine_dir, 'mpi_out.log'),
+                   _err=join(fine_dir, 'mpi_err.log'))
         else:
             bash('-c', "%s calibrate %s" % (config['grow_binary'],
                                         scenario_file_path))
@@ -165,15 +170,15 @@ class Location:
 
     def calibrate_final(self, monte_carlo_iterations=50):
 
-        final_dir = os.path.join(self.output_path, 'final')
+        final_dir = join(self.output_path, 'final')
         self.create_dir(final_dir)
         default_step = 1
         
-        cs = ControlStats(os.path.join(os.path.join(self.output_path,
+        cs = ControlStats(join(join(self.output_path,
                                                     'fine'),
                                        'control_stats.log'), default_step)
         cs.params['output_dir'] = final_dir + '/'
-        with open(os.path.join(self.output_path,
+        with open(join(self.output_path,
                                'scenario.%s.final' % self.location), 'w') as f:
             scenario_file_path = f.name            
             f.write(self.create_scenario_file(cs.params,
@@ -184,7 +189,9 @@ class Location:
                    config['mpi_cores'],
                    config['grow_binary'],
                    'calibrate',
-                   scenario_file_path)
+                   scenario_file_path,
+                   _out=join(final_dir, 'mpi_out.log'),
+                   _err=join(final_dir, 'mpi_err.log'))
         else:
             bash('-c', "%s calibrate %s" % (config['grow_binary'],
                                         scenario_file_path))
@@ -202,11 +209,11 @@ class Location:
         self.predict_start = start
         self.predict_end = end
 
-        predict_dir = os.path.join(self.output_path, 'predict')
+        predict_dir = join(self.output_path, 'predict')
         self.create_dir(predict_dir)
         
         default_step = 1  # ignored for predict
-        cs = ControlStats(os.path.join(os.path.join(self.output_path,
+        cs = ControlStats(join(join(self.output_path,
                                                     'final'),
                                        'control_stats.log'), default_step)
         cs.params['output_dir'] = predict_dir + '/'
@@ -226,7 +233,7 @@ class Location:
         if rg:
             cs.params['rg'] = rg
 
-        with open(os.path.join(self.output_path,
+        with open(join(self.output_path,
                                'scenario.%s.predict' % self.location),
                   'w') as f:
             scenario_file_path = f.name            
@@ -238,7 +245,9 @@ class Location:
                    config['mpi_cores'],
                    config['grow_binary'],
                    'predict',
-                   scenario_file_path)
+                   scenario_file_path,
+                   _out=join(predict_dir, 'mpi_out.log'),
+                   _err=join(predict_dir, 'mpi_err.log'))
         else:
             bash('-c', "%s predict %s" % (config['grow_binary'],
                                       scenario_file_path))
