@@ -20,7 +20,7 @@ You may install this library and helper scripts using pip.
 Application Programming Interface
 ---------------------------------
 
-
+.. code-block:: python
 
     import sleuth_automation as sa
 
@@ -45,12 +45,14 @@ Command Line Interface
 
 A single run may be achieved using the included **sleuth_run.py** script.
 
-   sleuth_run.py --sleuth_path /path/to/sleuth/ \
-                 --location_dir /path/to/my_location/ \
-                 --location_name my_location \
-                 --mpi_cores 40 \
-                 --predict_start 2017 \
-                 --predict_end 2050
+.. code-block:: shell
+
+   $ sleuth_run.py --sleuth_path /path/to/sleuth/ \
+                   --location_dir /path/to/my_location/ \
+                   --location_name my_location \
+                   --mpi_cores 40 \
+                   --predict_start 2017 \
+                   --predict_end 2050
 
 This will create scenario files for coarse, fine and final stages of
 calibration, extracting parameters from the control_stats.log files,
@@ -62,10 +64,12 @@ directory and run them as a batch.  Using the
 **create_sleuth_condor_batch.py** one may create a batch run for the
 HT-Condor queue management system.
 
-    create_sleuth_condor_batch.py --sleuth_path /path/to/sleuth \
-                                  --locations_dir /path/to/locations_group \
- 				  --mpi_cores 32 \
-                                  --predict_start 2017 --predict_end 2050
+.. code-block:: shell
+
+    $ create_sleuth_condor_batch.py --sleuth_path /path/to/sleuth \
+                                    --locations_dir /path/to/locations_group \
+ 	  		 	    --mpi_cores 32 \
+                                    --predict_start 2017 --predict_end 2050
 
 				  
 This will create a **submit.condor** file setup with the appropiate
