@@ -11,18 +11,10 @@ import subprocess
 # falta que el path al whirlgif sea un parametro tambien
 
 
-parser = argparse.ArgumentParser(description='Process some integers.')
+parser = argparse.ArgumentParser(description='Converts all gif outputs to tif raster in */out/predict')
 parser.add_argument('--path', 
                     required=True,
                     help='path to the folder')
-parser.add_argument('--predict_start',
-                    type=int,
-                    required=True,
-                    help='year of prediction start')
-parser.add_argument('--predict_end',
-                    type=int,
-                    required=True,
-                    help='year of prediction end')
 
 
 
@@ -43,19 +35,19 @@ for folder in os.listdir(args.path):
         ymin = str(data["ymin"])
         ymax = str(data["ymax"])
         carpetas.append(folder)
-        for esteFile in os.listdir(join(join(join(args.path, folder),"out"), "prediction")):
+        for esteFile in os.listdir(join(join(join(args.path, folder),"out"), "predict")):
             if ".gif" in esteFile:
                 print esteFile
-                elGif = join(join(join(join(args.path, folder),"out"), "prediction"), esteFile)
+                elGif = join(join(join(join(args.path, folder),"out"), "predict"), esteFile)
                 elTif = elGif[:-4]+"_temp.tif"
                 print 'gdal_translate', '-a_srs', epsg, '-of', 'GTiff', '-gcp', '0', renglones, xmin, ymin, '-gcp', columnas, renglones, xmax, ymin, '-gcp', columnas, '0', xmax, ymax, '-gcp', '0', '0', xmin, ymax, elGif, elTif
                 subprocess.check_call(['gdal_translate', '-a_srs', epsg, '-ot', 'Float64', '-of', 'GTiff', '-gcp', '0', renglones, xmin, ymin, '-gcp', columnas, renglones, xmax, ymin, '-gcp', columnas, '0', xmax, ymax, '-gcp', '0', '0', xmin, ymax, elGif, elTif])
 
 
-        for esteFile in os.listdir(join(join(join(args.path, folder),"out"), "prediction")):
+        for esteFile in os.listdir(join(join(join(args.path, folder),"out"), "predict")):
             if "temp.tif" in esteFile and not esteFile.endswith("xml"):
                 print esteFile
-                eltempTiff = join(join(join(join(args.path, folder),"out"), "prediction"), esteFile)
+                eltempTiff = join(join(join(join(args.path, folder),"out"), "predict"), esteFile)
                 elTif = eltempTiff.replace("_temp", "")
                 #otbcli_BandMath -il Coyoacan_urban_2042.tif -out test3.tif -exp "im1b1 < 9 ? im1b1 : 0"
                 subprocess.check_call(['otbcli_BandMath', '-il', eltempTiff, '-out', elTif, '-exp', 'im1b1 < 9 ? im1b1 : 0'])               
