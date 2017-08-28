@@ -2,7 +2,9 @@ import os
 from os.path import join
 from jinja2 import Environment, PackageLoader
 from controlstats import ControlStats
-from sh import bash
+from sh import bash, gdal_translate, otbcli_BandMath
+import json
+
 try:
     from sh import mpirun
 except:
@@ -249,3 +251,35 @@ class Location:
         else:
             bash('-c', "%s predict %s" % (config['grow_binary'],
                                           scenario_file_path))
+
+    def gif2tif(self, start, end):
+        predict_dir = join(self.output_path, 'predict')
+        with open(join(self.input_path, 'extent.json')) as extent_file:
+            extent = json.load(extent_file)
+            columnas = str(int(extent["columns"]) - 1)
+            renglones = str(int(extent["rows"]) - 1)
+            epsg = 'EPSG:' + extent["epsg"]
+            xmin = str(extent["xmin"])
+            xmax = str(extent["xmax"])
+            ymin = str(extent["ymin"])
+            ymax = str(extent["ymax"])
+
+        for year in range(start + 1, end + 1):
+            gif = join(predict_dir,
+                       "%s_urban_%y.gif" % (self.location, year))
+            tmp_tif = join(predict_dir,
+                           "%s_urban_%y_tmp.tif" % (self.location, year))
+            tif = join(predict_dir,
+                       "%s_urban_%y.tif" % (self.location, year))
+
+            gdal_translate('-a_srs', epsg,
+                           '-ot', 'Float64',
+                           '-of', 'GTiff',
+                           '-gcp', '0', renglones, xmin, ymin,
+                           '-gcp', columnas, renglones, xmax, ymin,
+                           '-gcp', columnas, '0', xmax, ymax,
+                           '-gcp', '0', '0', xmin, ymax,
+                           gif, tmp_tif)
+
+            otbcli_BandMath('-il', tmp_tif,
+                            '-out', tif, '-exp', 'im1b1 < 9 ? im1b1 : 0')
