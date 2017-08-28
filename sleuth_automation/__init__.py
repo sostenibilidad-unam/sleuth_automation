@@ -269,6 +269,8 @@ class Location:
                        "%s_urban_%s.gif" % (self.location, year))
             tmp_tif = join(predict_dir,
                            "%s_urban_%s_tmp.tif" % (self.location, year))
+            tmp_xml = join(predict_dir,
+                           "%s_urban_%s_tmp.tif.aux.xml" % (self.location, year))
             tif = join(predict_dir,
                        "%s_urban_%s.tif" % (self.location, year))
 
@@ -283,5 +285,8 @@ class Location:
 
             otbcli_BandMath('-il', tmp_tif,
                             '-out', tif, '-exp', 'im1b1 < 9 ? im1b1 : 0')
-            os.remove(tmp_tif)
-            os.remove("%s_urban_%s_tmp.tif.aux.xml" % (self.location, year))
+            try:
+                os.remove(tmp_tif)
+                os.remove(tmp_xml)
+            except:
+                pass
