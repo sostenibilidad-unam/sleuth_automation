@@ -242,7 +242,7 @@ class Location:
 
         if config['use_mpi']:
             mpirun('-np',
-                   config['mpi_cores'],
+                   1,
                    config['grow_binary'],
                    'predict',
                    scenario_file_path,
