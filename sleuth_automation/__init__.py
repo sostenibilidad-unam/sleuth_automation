@@ -266,11 +266,11 @@ class Location:
 
         for year in range(start + 1, end + 1):
             gif = join(predict_dir,
-                       "%s_urban_%y.gif" % (self.location, year))
+                       "%s_urban_%s.gif" % (self.location, year))
             tmp_tif = join(predict_dir,
-                           "%s_urban_%y_tmp.tif" % (self.location, year))
+                           "%s_urban_%s_tmp.tif" % (self.location, year))
             tif = join(predict_dir,
-                       "%s_urban_%y.tif" % (self.location, year))
+                       "%s_urban_%s.tif" % (self.location, year))
 
             gdal_translate('-a_srs', epsg,
                            '-ot', 'Float64',
@@ -283,3 +283,5 @@ class Location:
 
             otbcli_BandMath('-il', tmp_tif,
                             '-out', tif, '-exp', 'im1b1 < 9 ? im1b1 : 0')
+            os.remove(tmp_tif)
+            os.remove("%s_urban_%s_tmp.tif.aux.xml" % (self.location, year))
