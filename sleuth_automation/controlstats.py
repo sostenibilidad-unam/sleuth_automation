@@ -1,22 +1,68 @@
+# coding: utf-8
+# Authors: Fidel Serrano, Rodrigo García
+"""
+An object representation of a SLEUTH control_stats.log file.
+
+control_stats.log files are the output of calibration steps. They
+contain the ranges for next calibration or prediction steps. This
+helper module extracts those ranges for all SLEUTH parameters:
+
+    - diff
+    - brd
+    - sprd
+    - slp
+    - rg
+
+This is helper module will extract parameter ranges into a dictionary
+that can be rendered into a jinja2 template for the creation of SLEUTH
+scenario files.
+
+How to use this module
+======================
+
+1. Import it: ``from controlstats import ControlStats``.
+
+2. Create an instance::
+
+    cs = ControlStats('/path/to/my_location/output/coarse/control_stats.log'),
+                      step=5)
+
+   parameter ranges are extracted into the **params** attribute: ``cs.params``
+
+3. ``cs.params`` is passed to ``Location.create_scenario_file`` to
+  render scenario files.
+
+"""
 from math import floor
 import pandas
 
 
 class ControlStats:
     """
-    This class grabs values from the control_stats.log and calculates
-    ranges for the parameters for next calibration stage:
+    This class grabs values from a **control_stats.log** file and calculates
+    ranges for the parameters for next calibration stage.
+
+    It will find ranges for:
+
     - diff
     - brd
     - sprd
     - slp
     - rg
+
+    Including values for start, end and step.
+
+    All fetched parameters will be stored into the **params** property.
     """
 
     def __init__(self, path, step):
         """
-        input path to control_stats.log
-        step
+        Initialize class.
+
+        Parameters:
+
+        - `path`: path to control_stats.log file
+        - `step`: width of step for creation of range
         """
         self.default_step = step
         self.params = {}
@@ -82,6 +128,9 @@ class ControlStats:
                            'rg_end': rg_end}
 
     def step(self, Max, Start):
+        """
+        Returns step size.
+        """
         if Max == 1:
             Max = 0
         if Max == Start:

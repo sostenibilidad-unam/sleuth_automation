@@ -7,8 +7,11 @@ from sh import which
 import sleuth_automation
 from jinja2 import Environment, PackageLoader
 
+description = """
+This script will create a condor submit file for a batch of SLEUTH runs.
+"""
 
-parser = argparse.ArgumentParser(description='')
+parser = argparse.ArgumentParser(description=description)
 
 parser.add_argument('--sleuth_path', required=True,
                     help='path to SLEUTH directory')
@@ -34,7 +37,8 @@ list_of_regions = []
 for thisFile in os.listdir(args.locations_dir):
     if os.path.isdir(join(args.locations_dir, thisFile)):
         list_of_regions.append({"name": thisFile,
-                                "path": abspath(join(args.locations_dir, thisFile)) + '/'})
+                                "path": abspath(join(args.locations_dir,
+                                                     thisFile)) + '/'})
 
 template = env.get_template("sleuth_template.condor")
 

@@ -1,3 +1,39 @@
+# coding: utf-8
+# Authors: Fidel Serrano, Rodrigo García
+"""
+An object oriented wrapper for SLEUTH, an urban growth model.
+
+This module defines the `Location` class, which is a work unit for SLEUTH.
+
+How to use this module
+======================
+
+1. Import it: ``import sleuth_automation as sa``
+
+2. Create an instance::
+
+    l = sa.Location('my_location',
+                    '/path/to/my_location')
+
+3. Calibrate model::
+
+    l.calibrate_coarse()
+    l.calibrate_fine()
+    l.calibrate_final()
+
+4. Predict growth::
+
+    l.sleuth_predict(2017, 2060)
+
+5. Format prediction as TIFF::
+
+    l.gif2tif(2017, 2060)
+
+
+"""
+
+__docformat__ = 'restructuredtext'
+
 import os
 from os.path import join
 from jinja2 import Environment, PackageLoader
@@ -14,6 +50,16 @@ config = {}
 
 
 def configure(sleuth_path, use_mpi=False, mpi_cores=40):
+    """
+    Merge extra parameters into global config.
+
+    Parameters:
+
+    - `sleuth_path`: path to SLEUTH directory.
+    - `use_mpi`: wether to call SLEUTH binaries thru the MPI.
+    - `mpi_cores`: if so, how many cores to use.
+    """
+
     config['sleuth_path'] = sleuth_path
     config['use_mpi'] = use_mpi
     config['mpi_cores'] = mpi_cores
@@ -28,11 +74,12 @@ class Location:
 
     def __init__(self, location, input_path):
         """
-        location is a name for the location according to sleuth docs
-        path is a path to the location directory
-        start and end enclose the temporal range for prediction
-        dates is a list of years which are part of the .GIF
-        filenames in the input data
+        Initialize a `Location` object.
+
+        Parameters:
+
+        - `location`: a name for the location according to sleuth docs
+        - `input_path`: a path to the location directory
         """
 
         assert len(config.keys()) > 0
@@ -69,10 +116,23 @@ class Location:
                                                     'templates'))
 
     def create_dir(self, path):
+        """
+        If directory doesn't exist: create it.
+        """
         if not os.path.exists(path):
             os.mkdir(path, 0755)
 
     def create_scenario_file(self, params, monte_carlo_iterations):
+        """
+        Merges extra parameters to global config and renders them into
+        a SLEUTH scenario file.
+
+        Parameters:
+
+        - `params`: extra parameters to merge.
+        - `monte_carlo_iterations`: more iterations take a longer time
+           to run but add precision.
+        """
 
         template = self.env.get_template('scenario.jinja')
 
@@ -94,6 +154,15 @@ class Location:
         return template.render(arguments)
 
     def calibrate_coarse(self, monte_carlo_iterations=50):
+        """
+        Run SLEUTH coarse calibration.
+
+        Parameters:
+
+        - `monte_carlo_iterations`: iterations for the coarse
+        calibration step.
+
+        """
         coarse_dir = join(self.output_path, 'coarse')
         self.create_dir(coarse_dir)
         coarse_params = {'diff': 50,
@@ -143,6 +212,15 @@ class Location:
                                             scenario_file_path))
 
     def calibrate_fine(self, monte_carlo_iterations=50):
+        """
+        Run SLEUTH fine calibration.
+
+        Parameters:
+
+        - `monte_carlo_iterations`: iterations for the fine
+        calibration step.
+
+        """
 
         fine_dir = join(self.output_path, 'fine')
         self.create_dir(fine_dir)
@@ -170,6 +248,15 @@ class Location:
                                             scenario_file_path))
 
     def calibrate_final(self, monte_carlo_iterations=50):
+        """
+        Run SLEUTH final calibration.
+
+        Parameters:
+
+        - `monte_carlo_iterations`: iterations for the final
+        calibration step.
+
+        """
 
         final_dir = join(self.output_path, 'final')
         self.create_dir(final_dir)
@@ -198,6 +285,9 @@ class Location:
                                             scenario_file_path))
 
     def sleuth_calibrate(self):
+        """
+        Run coarse, fine and final calibration steps in one call.
+        """
         self.calibrate_coarse()
         self.calibrate_fine()
         self.calibrate_final()
@@ -206,6 +296,21 @@ class Location:
                        start, end,
                        diff=None, brd=None, sprd=None, slp=None, rg=None,
                        monte_carlo_iterations=150):
+        """
+        Run SLEUTH prediction step for range enclosed in start, end.
+
+        Parameters:
+
+        - `start`: begining of temporal range for prediction
+        - `end`: end of temporal range for prediction
+        - `diff`: TODO
+        - `brd`: TODO
+        - `sprd`: spread
+        - `slp`: slope
+        - `rg`: TODO
+        - `monte_carlo_iterations`: iterations for the prediction step
+        """
+
         self.predict_start = start
         self.predict_end = end
 
@@ -253,6 +358,18 @@ class Location:
                                           scenario_file_path))
 
     def gif2tif(self, start, end):
+        """
+        Convert prediction output from GIF to TIFF.
+
+        Will use extent.json and gdal_translate to recover geospatial
+        information lost to GIF format.
+
+        Parameters:
+        - `start`: beginning of prediction range.
+        - `end`: ending of prediction range, inclusive.
+
+        Start and end parameters are necessary to figure out paths.
+        """
         predict_dir = join(self.output_path, 'predict')
         with open(join(self.input_path, 'extent.json')) as extent_file:
             extent = json.load(extent_file)
@@ -270,7 +387,8 @@ class Location:
             tmp_tif = join(predict_dir,
                            "%s_urban_%s_tmp.tif" % (self.location, year))
             tmp_xml = join(predict_dir,
-                           "%s_urban_%s_tmp.tif.aux.xml" % (self.location, year))
+                           "%s_urban_%s_tmp.tif.aux.xml" % (self.location,
+                                                            year))
             tif = join(predict_dir,
                        "%s_urban_%s.tif" % (self.location, year))
 
