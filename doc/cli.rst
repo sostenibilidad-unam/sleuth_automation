@@ -1,6 +1,6 @@
-==================================
- Command Line Interface to SLEUTH
-==================================
+=================================
+Simplified Command Line Interface
+=================================
 
 The full pipeline can be run by supplied script. Run thusly::
 

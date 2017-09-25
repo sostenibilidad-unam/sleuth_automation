@@ -14,9 +14,9 @@ We distribute it through pypi_ and keep a public repo at GitHub_.
    :caption: Contents:
 
    installation
-   api
    cli
    batch
+   api
 
 
 Indices and tables

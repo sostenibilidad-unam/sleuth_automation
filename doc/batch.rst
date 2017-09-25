@@ -1,6 +1,6 @@
-===================================
- Batch running of SLEUTH Automation
-===================================
+========================
+ Batch running of SLEUTH
+========================
 
 A script is included that will create a HT-Condor_ submit file.
 
