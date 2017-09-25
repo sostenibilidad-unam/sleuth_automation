@@ -16,6 +16,7 @@ This project aims to ease the running of SLEUTH_, an urban growth model.
    :maxdepth: 1
    :caption: Contents:
 
+   installation
    api
    cli
    batch

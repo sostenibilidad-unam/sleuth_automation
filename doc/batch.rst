@@ -1,8 +1,8 @@
-=======================
+===================================
  Batch running of SLEUTH Automation
-=======================
+===================================
 
-We have included a script that will create a HT-Condor_ submit file.
+A script is included that will create a HT-Condor_ submit file.
 
 .. _HT-Condor: https://research.cs.wisc.edu/htcondor/ 
 
@@ -36,7 +36,9 @@ Arguments:
 Running this script will create a **submit.condor** file in the
 supplied **locations_dir**.
 
+
 This file can be submited for execution::
-    $ cd $LOCATIONS_DIR
+
+    $ cd LOCATIONS_DIR
     $ condor_submit submit.condor
 
