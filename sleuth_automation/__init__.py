@@ -10,7 +10,14 @@ This module defines the `Location` class, which is a work unit for SLEUTH.
 How to use this module
 ======================
 
-1. Import it: ``import sleuth_automation as sa``
+1. Import it::
+
+    import sleuth_automation as sa
+
+2. Configure it at least with a path to SLEUTH binaries::
+
+    sa.configure(sleuth_path='/path/to/sleuth',
+                 use_mpi=True, mpi_cores=32)
 
 2. Create an instance::
 
@@ -22,6 +29,10 @@ How to use this module
     l.calibrate_coarse()
     l.calibrate_fine()
     l.calibrate_final()
+
+or calibrate with a single call::
+
+    l.sleuth_calibrate()
 
 4. Predict growth::
 
@@ -367,6 +378,7 @@ class Location:
         information lost to GIF format.
 
         Parameters:
+
         - `start`: beginning of prediction range.
         - `end`: ending of prediction range, inclusive.
 

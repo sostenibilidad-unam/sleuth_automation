@@ -1,16 +1,13 @@
-.. Slat documentation master file, created by
-   sphinx-quickstart on Wed Feb  1 13:45:43 2017.
-   You can adapt this file completely to your liking, but it should at least
-   contain the root `toctree` directive.
-
 SLEUTH Automation
 =================
 
 This project aims to ease the running of SLEUTH_, an urban growth model.
 
+We distribute it through pypi_ and keep a public repo at GitHub_.
 
 .. _SLEUTH: http://www.ncgia.ucsb.edu/projects/gig/
-
+.. _pypi: https://pypi.python.org/pypi/sleuth-automation/
+.. _GitHub: https://github.com/sostenibilidad-unam/sleuth_automation
 
 .. toctree::
    :maxdepth: 1
