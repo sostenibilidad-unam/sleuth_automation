@@ -3,17 +3,23 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-Welcome to SLEUTH Automation
-================================
+SLEUTH Automation
+=================
+
+This project aims to ease the running of SLEUTH_, an urban growth model.
+
+
+.. _SLEUTH: http://www.ncgia.ucsb.edu/projects/gig/
+
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 1
    :caption: Contents:
 
    api
    cli
-   batch   
-   sleuth_mpi   
+   batch
+
 
 Indices and tables
 ==================

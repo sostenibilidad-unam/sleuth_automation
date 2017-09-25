@@ -2,7 +2,11 @@
  Python interface to SLEUTH
 ============================
 
-SLEUTH Automation wraps SLEUTH in a Python interface. Optionally it may use MPI or
-HT-Condor for parallelization.
+.. automodule:: sleuth_automation
 
-   # .. autofunction:: slat.calibrate		
+
+**Location** methods
+----------------------
+
+.. autoclass:: Location
+   :members:

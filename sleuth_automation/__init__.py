@@ -1,7 +1,9 @@
 # coding: utf-8
 # Authors: Fidel Serrano, Rodrigo García
 """
-An object oriented wrapper for SLEUTH, an urban growth model.
+An object oriented wrapper for SLEUTH_, an urban growth model.
+
+.. _SLEUTH: http://www.ncgia.ucsb.edu/projects/gig/
 
 This module defines the `Location` class, which is a work unit for SLEUTH.
 
@@ -38,7 +40,7 @@ import os
 from os.path import join
 from jinja2 import Environment, PackageLoader
 from controlstats import ControlStats
-from sh import bash, gdal_translate, otbcli_BandMath
+from sh import bash, gdal_translate  #, otbcli_BandMath
 import json
 
 try:
