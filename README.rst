@@ -1,5 +1,3 @@
-.. image:: https://readthedocs.org/projects/sleuth-automation/badge/?version=latest
-
 Sleuth Automation
 =================
 
@@ -80,3 +78,8 @@ This will create a **submit.condor** file in the locations directory,
 setup with the appropiate **sleuth_run.py** commands.
 
 
+Documentation
+-------------
+.. image:: https://readthedocs.org/projects/sleuth-automation/badge/?version=latest
+
+Full documentation at http://sleuth-automation.readthedocs.io
