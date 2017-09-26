@@ -1,3 +1,5 @@
+.. image:: https://readthedocs.org/projects/sleuth-automation/badge/?version=latest
+
 Sleuth Automation
 =================
 
@@ -77,10 +79,4 @@ HT-Condor queue management system.
 This will create a **submit.condor** file in the locations directory,
 setup with the appropiate **sleuth_run.py** commands.
 
-
------
-
-<a href="http://sleuth-automation.readthedocs.io/en/latest/?badge=latest" style="text-decoration: none;">
-<img src="https://readthedocs.org/projects/sleuth-automation/badge/?version=latest" />
-</a>
 
