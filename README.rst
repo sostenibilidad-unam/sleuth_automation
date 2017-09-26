@@ -80,4 +80,7 @@ setup with the appropiate **sleuth_run.py** commands.
 
 -----
 
-http://sleuth-automation.readthedocs.io/en/latest/?badge=latest
+<a href="http://sleuth-automation.readthedocs.io/en/latest/?badge=latest" style="text-decoration: none;">
+<img src="https://readthedocs.org/projects/sleuth-automation/badge/?version=latest" />
+</a>
+
