@@ -76,3 +76,8 @@ HT-Condor queue management system.
 				  
 This will create a **submit.condor** file in the locations directory,
 setup with the appropiate **sleuth_run.py** commands.
+
+
+-----
+
+http://sleuth-automation.readthedocs.io/en/latest/?badge=latest
