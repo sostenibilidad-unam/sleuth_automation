@@ -1,9 +1,9 @@
 # coding: utf-8
 # Authors: Fidel Serrano, Rodrigo García
 """
-An object representation of a SLEUTH control_stats.log file.
+An object representation of a SLEUTH control_stats.log_ file.
 
-control_stats.log files are the output of calibration steps. They
+control_stats.log_ files are the output of calibration steps. They
 contain the ranges for next calibration or prediction steps. This
 helper module extracts those ranges for all SLEUTH parameters:
 
@@ -29,9 +29,9 @@ How to use this module
 
    parameter ranges are extracted into the **params** attribute: ``cs.params``
 
-3. ``cs.params`` is passed to ``Location.create_scenario_file`` to
-  render scenario files.
+3. ``cs.params`` is passed to ``Location.create_scenario_file`` to render scenario files.
 
+.. _control_stats.log: http://www.ncgia.ucsb.edu/projects/gig/About/dtStatOut.htm
 """
 from math import floor
 import pandas

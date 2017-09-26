@@ -51,7 +51,7 @@ import os
 from os.path import join
 from jinja2 import Environment, PackageLoader
 from controlstats import ControlStats
-from sh import bash, gdal_translate  #, otbcli_BandMath
+from sh import bash, gdal_translate, otbcli_BandMath
 import json
 
 try:
@@ -60,6 +60,14 @@ except:
     pass
 
 config = {}
+
+
+def create_dir(self, path):
+    """
+    If directory doesn't exist: create it.
+    """
+    if not os.path.exists(path):
+        os.mkdir(path, 0755)
 
 
 def configure(sleuth_path, use_mpi=False, mpi_cores=40):
@@ -84,7 +92,15 @@ def configure(sleuth_path, use_mpi=False, mpi_cores=40):
 
 
 class Location:
+    """
+    This class represents the main work unit of the SLEUTH model.
+    Within a location urban growth is simulated. A location should
+    have a name which is just a string and is used for naming output
+    files, and a directory containing GIF files as specified by
+    the SLEUTH documentation_.
 
+    .. _documentation: http://www.ncgia.ucsb.edu/projects/gig/About/dtInput.htm
+    """
     def __init__(self, location, input_path):
         """
         Initialize a `Location` object.
@@ -100,7 +116,7 @@ class Location:
         self.location = location
         self.input_path = input_path
         self.output_path = join(input_path, 'out')
-        self.create_dir(self.output_path)
+        create_dir(self.output_path)
         # self.validate_input_path()
 
         self.urban_layers = []
@@ -127,13 +143,6 @@ class Location:
 
         self.env = Environment(loader=PackageLoader('sleuth_automation',
                                                     'templates'))
-
-    def create_dir(self, path):
-        """
-        If directory doesn't exist: create it.
-        """
-        if not os.path.exists(path):
-            os.mkdir(path, 0755)
 
     def create_scenario_file(self, params, monte_carlo_iterations):
         """
@@ -172,12 +181,11 @@ class Location:
 
         Parameters:
 
-        - `monte_carlo_iterations`: iterations for the coarse
-        calibration step.
+        - `monte_carlo_iterations`: iterations for the coarse calibration step.
 
         """
         coarse_dir = join(self.output_path, 'coarse')
-        self.create_dir(coarse_dir)
+        create_dir(coarse_dir)
         coarse_params = {'diff': 50,
                          'diff_start': 0,
                          'diff_step': 25,
@@ -230,13 +238,12 @@ class Location:
 
         Parameters:
 
-        - `monte_carlo_iterations`: iterations for the fine
-        calibration step.
+        - `monte_carlo_iterations`: iterations for the fine calibration step.
 
         """
 
         fine_dir = join(self.output_path, 'fine')
-        self.create_dir(fine_dir)
+        create_dir(fine_dir)
         default_step = 5
 
         cs = ControlStats(join(join(self.output_path,
@@ -266,8 +273,7 @@ class Location:
 
         Parameters:
 
-        - `monte_carlo_iterations`: iterations for the final
-        calibration step.
+        - `monte_carlo_iterations`: iterations for the final calibration step.
 
         """
 
@@ -328,7 +334,7 @@ class Location:
         self.predict_end = end
 
         predict_dir = join(self.output_path, 'predict')
-        self.create_dir(predict_dir)
+        create_dir(predict_dir)
 
         default_step = 1  # ignored for predict
         cs = ControlStats(join(join(self.output_path,
@@ -372,7 +378,7 @@ class Location:
 
     def gif2tif(self, start, end):
         """
-        Convert prediction output from GIF to TIFF.
+        Convert `prediction output`_ from GIF to TIFF.
 
         Will use extent.json and gdal_translate to recover geospatial
         information lost to GIF format.
@@ -383,6 +389,8 @@ class Location:
         - `end`: ending of prediction range, inclusive.
 
         Start and end parameters are necessary to figure out paths.
+
+        .. _`prediction output`: http://www.ncgia.ucsb.edu/projects/gig/About/dtImOut.htm
         """
         predict_dir = join(self.output_path, 'predict')
         with open(join(self.input_path, 'extent.json')) as extent_file:

@@ -33,11 +33,12 @@ Arguments:
                         monte carlo iterations
 
 
-Running this script will create a **submit.condor** file in the
-supplied **locations_dir**.
+Running this script will create a submit.condor_ file in the
+supplied **LOCATIONS_DIR**, with proper invocations of the sleuth_run.py script.
 
+.. _submit.condor: http://research.cs.wisc.edu/htcondor/manual/v8.4/2_5Submitting_Job.html
 
-This file can be submited for execution::
+This file can then be submited for execution::
 
     $ cd LOCATIONS_DIR
     $ condor_submit submit.condor

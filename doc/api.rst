@@ -4,9 +4,19 @@
 
 .. automodule:: sleuth_automation
 
-
-**Location** methods
+The **Location** class
 ----------------------
 
 .. autoclass:: Location
    :members:
+
+
+ControlStats module
+-------------------
+
+.. automodule:: sleuth_automation.controlstats
+
+ConstrolStats class
+-------------------
+		
+.. autoclass:: ControlStats
