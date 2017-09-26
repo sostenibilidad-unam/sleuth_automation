@@ -51,8 +51,12 @@ import os
 from os.path import join
 from jinja2 import Environment, PackageLoader
 from controlstats import ControlStats
-from sh import bash, gdal_translate, otbcli_BandMath
 import json
+
+try:
+    from sh import bash, gdal_translate, otbcli_BandMath
+except:
+    pass
 
 try:
     from sh import mpirun

@@ -6,7 +6,7 @@ def readme():
         return f.read()
 
 setup(name='sleuth_automation',
-      version='0.3',
+      version='1.1',
       description='Python wrapper for SLEUTH urban growth model.',
       long_description=readme(),
       classifiers=[
