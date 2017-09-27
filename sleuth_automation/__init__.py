@@ -66,7 +66,7 @@ except:
 config = {}
 
 
-def create_dir(self, path):
+def create_dir(path):
     """
     If directory doesn't exist: create it.
     """
