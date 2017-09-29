@@ -2,19 +2,31 @@ from jinja2 import Environment, FileSystemLoader
 from flask import Flask, send_from_directory
 from flask import jsonify, Response
 from flask_cors import CORS
+from werkzeug.utils import secure_filename
 
 
 import sleuth_automation as sleuth
-from os.path import join
+from os.path import join, dirname, abspath
 
 
 app = Flask(__name__, static_url_path='')
 app.secret_key = 'F12Zr47j\3yX R~X@H!jmM]Lwf/,?KT'
 CORS(app)
 
+BASE_DIR = dirname(dirname(abspath(__file__)))
+
+UPLOAD_FOLDER = join(BASE_DIR, 'uploads')
+
+ALLOWED_EXTENSIONS = set(['json', 'gif'])
+
+def allowed_file(filename):
+    return '.' in filename and \
+        filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
 
-@app.route('/sleuth/new_batch/')
+@app.route('/sleuth/new_batch/', methods=['POST'])
 def new_batch():
     """
     Start webservice session. One session per qgis-plugin client.
@@ -23,14 +35,32 @@ def new_batch():
     return jsonify(batch_id)
 
 
-@app.route('/sleuth/<batch_id>/add_location/')
+@app.route('/sleuth/<batch_id>/add_location/',  methods=['POST'])
 def add_location(batch_id):
     """
     Add location to region package for group submission.
     """
-    pass
+    if request.method == 'POST':
+        # check if the post request has the file part
+        if 'file' not in request.files:
+            flash('No file part')
+            return redirect(request.url)
 
-@app.route('/sleuth/<batch_id>/submit/')
+        file = request.files['file']
+        # if user does not select file, browser also
+        # submit a empty part without filename
+        if file.filename == '':
+            flash('No selected file')
+            return redirect(request.url)
+        if file and allowed_file(file.filename):
+            filename = secure_filename(file.filename)
+            file.save(os.path.join(app.config['UPLOAD_FOLDER'],
+                                   filename))
+            return redirect(url_for('uploaded_file',
+                                    filename=filename))
+
+
+@app.route('/sleuth/<batch_id>/submit/',  methods=['POST'])
 def submit_batch(batch_id):
     """
     Submit batch to condor
@@ -75,14 +105,14 @@ def submit_batch(batch_id):
     # condor_submit submit.condor
     return jsonify({'status': 'ok'})
 
-@app.route('/sleuth/<batch_id>/submit/')
+@app.route('/sleuth/<batch_id>/submit/', methods=['GET'])
 def run_status(region_id):
     """
     Update run status from logs to db.
     Return status from db.
     """
-    pass
+    return jsonify({'status': 'ok'})
 
 
-def batch_rm(batch_id):
-    pass
+def batch_rm(batch_id, methods=['GET']):
+    return jsonify({'status': 'ok'})
