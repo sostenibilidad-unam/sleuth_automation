@@ -1,14 +1,19 @@
 from pony.orm import db_session, Database, Required, Json, Set
 from datetime import datetime
+from os.path import join
+
 
 db = Database()
 
 
-class Location(db.Entity):
+class Experiment(db.Entity):
     name = Required(str)
     batch = Required(Batch)
     condor_job_id = Optional(id)
 
+    def get_location(self):
+        return join(UPLOAD_PATH, self.id)
+            
 
 class Batch(db.Entity):
     status = Required(str)
