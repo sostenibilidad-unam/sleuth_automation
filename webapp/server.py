@@ -8,6 +8,7 @@ from werkzeug.utils import secure_filename
 import sleuth_automation as sleuth
 from os.path import join, dirname, abspath
 
+# test these thusly https://alvinalexander.com/web/using-curl-scripts-to-test-restful-web-services
 
 app = Flask(__name__, static_url_path='')
 app.secret_key = 'F12Zr47j\3yX R~X@H!jmM]Lwf/,?KT'
@@ -32,6 +33,9 @@ def new_batch():
     Start webservice session. One session per qgis-plugin client.
     """
     batch_id = 1
+    # use hashlib to create batch hash for unguessable dirname
+    hash = hashlib.sha224("batch id %s with random %s" % (batch_id, random())).hexdigest()
+
     return jsonify(batch_id)
 
 
