@@ -1,6 +1,5 @@
-from jinja2 import Environment, FileSystemLoader
 from flask import Flask, send_from_directory
-from flask import jsonify, Response
+from flask import jsonify, request
 from flask_cors import CORS
 from werkzeug.utils import secure_filename
 
@@ -40,24 +39,21 @@ def add_location(batch_id):
     """
     Add location to region package for group submission.
     """
-    if request.method == 'POST':
-        # check if the post request has the file part
-        if 'file' not in request.files:
-            flash('No file part')
-            return redirect(request.url)
 
-        file = request.files['file']
-        # if user does not select file, browser also
-        # submit a empty part without filename
-        if file.filename == '':
-            flash('No selected file')
-            return redirect(request.url)
-        if file and allowed_file(file.filename):
-            filename = secure_filename(file.filename)
-            file.save(os.path.join(app.config['UPLOAD_FOLDER'],
-                                   filename))
-            return redirect(url_for('uploaded_file',
-                                    filename=filename))
+    # check if the post request has the file part
+    if 'file' not in request.files:
+        return jsonify({'status': 'no files?'})
+
+    file = request.files['file']
+    # if user does not select file, browser also
+    # submit a empty part without filename
+    if file.filename == '':
+        return jsonify({'status': 'no filenames?'})
+    if file and allowed_file(file.filename):
+        filename = secure_filename(file.filename)
+        file.save(join(app.config['UPLOAD_FOLDER'],
+                       filename))
+    return jsonify({'status': 'ok'})
 
 
 @app.route('/sleuth/<batch_id>/submit/',  methods=['POST'])
@@ -65,10 +61,8 @@ def submit_batch(batch_id):
     """
     Submit batch to condor
     """
-    # predict_start, predict_end, montecarlo_iterations <- get these from request
-
-    
-    # parser = argparse.ArgumentParser(description=description)
+    # predict_start, predict_end, montecarlo_iterations <- get these
+    # from request
 
     # parser.add_argument('--sleuth_path', required=True,
     #                     help='path to SLEUTH directory')
@@ -78,9 +72,6 @@ def submit_batch(batch_id):
     # parser.add_argument('--mpi_cores', default=0,
     #                     help="""number of cores available for MPI,
     #                     if 0 (default) don't use mpi""")
-
-    env = Environment(loader=PackageLoader('sleuth_automation',
-                                           'templates'))
 
     list_of_regions = []
     for thisFile in os.listdir(args.locations_dir):
@@ -105,6 +96,7 @@ def submit_batch(batch_id):
     # condor_submit submit.condor
     return jsonify({'status': 'ok'})
 
+
 @app.route('/sleuth/<batch_id>/submit/', methods=['GET'])
 def run_status(region_id):
     """
@@ -116,3 +108,8 @@ def run_status(region_id):
 
 def batch_rm(batch_id, methods=['GET']):
     return jsonify({'status': 'ok'})
+
+
+@app.route('/static/<path:path>')
+def send(path):
+    return send_from_directory('static', path)
