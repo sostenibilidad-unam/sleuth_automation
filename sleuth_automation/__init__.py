@@ -48,13 +48,13 @@ or calibrate with a single call::
 __docformat__ = 'restructuredtext'
 
 import os
-from os.path import join
+from os.path import join, abspath
 from jinja2 import Environment, PackageLoader
 from controlstats import ControlStats
 import json
 
 try:
-    from sh import bash, gdal_translate, otbcli_BandMath
+    from sh import bash, gdal_translate, otbcli_BandMath, which
 except:
     pass
 
@@ -434,3 +434,40 @@ class Location:
                 os.remove(tmp_xml)
             except:
                 pass
+
+
+class Region:
+    """
+    A directory containing several Locations
+    """
+
+    def __init__(self, region_dir,
+                 predict_start, predict_end,
+                 monte_carlo_iterations,
+                 mpi_cores):
+        self.region_dir = region_dir
+        self.predict_start = predict_start
+        self.predict_end = predict_end
+        self.monte_carlo_iterations = monte_carlo_iterations
+        self
+        self.env = Environment(loader=PackageLoader('sleuth_automation',
+                                                    'templates'))
+
+        self.locations = []
+        for f in os.listdir(region_dir):
+            if os.path.isdir(join(region_dir, f)):
+                self.locations.append({"name": f,
+                                       "path": abspath(join(region_dir,
+                                                            f)) + '/'})
+
+    def build(self):
+        template = self.env.get_template("sleuth_template.condor")
+        with open(join(self.region_dir, 'submit.condor'), 'w') as f:
+            f.write(template.render({'executable': which('sleuth_run.py'),
+                                     'list_of_regions': self.locations,
+                                     'predict_start': self.predict_start,
+                                     'predict_end': self.predict_end,
+                                     'sleuth_path': config['sleuth_path'],
+                                     'mpi_cores': self.mpi_cores,
+                                     'montecarlo_iterations':
+                                     self.montecarlo_iterations}))
