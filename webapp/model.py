@@ -1,30 +1,50 @@
-from pony.orm import Database, Required, Set, Optional
+from pony.orm import Database, Required, Optional
 from datetime import datetime
 from os.path import join
+import hashlib
+import random
+import sleuth_automation as sleuth
+
+sleuth.configure(sleuth_path='/path/to/sleuth',
+                 use_mpi=True, mpi_cores=32)
 
 
 db = Database()
 
-
 UPLOAD_PATH = './'
 
 
-class Batch(db.Entity):
+class Job(db.Entity):
     status = Required(str)
-    client_signature = Required(str)
-    locations = Set('Location')
-    date_created = Required(datetime)
-    date_submited = Optional(datetime)
+    # client_signature = Required(str)
+    hash = Required(str)
+    date_submited = Required(datetime)
     date_completed = Optional(datetime)
+    condor_job_id = Optional(int)
 
     def __repr__(self):
-        return "<bike %s %s %s>" % (self.id, self.lon, self.lat)
+        return "<job %s %s %s>" % (self.id, self.status, self.hash)
+
+    def set_hash(self):
+        self.hash = hashlib.sha224("batch id %s with random %s" % (
+            self.id,
+            random())).hexdigest()
+
+    def get_path(self):
+        path = "%s" % self.hash
+        return join(UPLOAD_PATH, path)
 
 
-class Experiment(db.Entity):
-    name = Required(str)
-    batch = Required(Batch)
-    condor_job_id = Optional(id)
+    def run(self):
+        l = sa.Location('my_location',
+                        '/path/to/my_location')
 
-    def get_location(self):
-        return join(UPLOAD_PATH, self.id)
+        l.calibrate_coarse()
+        l.calibrate_fine()
+        l.calibrate_final()
+
+        l.sleuth_calibrate()
+
+        l.sleuth_predict(2017, 2060)
+
+        l.gif2tif(2017, 2060)
