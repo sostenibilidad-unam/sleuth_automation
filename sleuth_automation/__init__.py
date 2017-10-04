@@ -52,6 +52,7 @@ from os.path import join, abspath
 from jinja2 import Environment, PackageLoader
 from controlstats import ControlStats
 import json
+import pickle
 
 try:
     from sh import bash, gdal_translate, otbcli_BandMath, which
@@ -105,6 +106,15 @@ class Location:
 
     .. _documentation: http://www.ncgia.ucsb.edu/projects/gig/About/dtInput.htm
     """
+
+    def save_status(self, status):
+        s = self.__dict__.copy()
+        del(s['env'])
+        s['status'] = status
+        with open(join(self.input_path, "%s.pickle" % self.location), 'w') as p:
+            pickle.dump(s, p)
+
+
     def __init__(self, location, input_path):
         """
         Initialize a `Location` object.
@@ -147,6 +157,8 @@ class Location:
 
         self.env = Environment(loader=PackageLoader('sleuth_automation',
                                                     'templates'))
+        self.save_status('initialized')
+
 
     def create_scenario_file(self, params, monte_carlo_iterations):
         """
@@ -224,6 +236,7 @@ class Location:
             f.write(self.create_scenario_file(coarse_params,
                                               monte_carlo_iterations))
 
+        self.save_status('coarse calibration')
         if config['use_mpi']:
             mpirun('-np',
                    config['mpi_cores'],
@@ -259,6 +272,8 @@ class Location:
             scenario_file_path = f.name
             f.write(self.create_scenario_file(cs.params,
                                               monte_carlo_iterations))
+
+        self.save_status('fine calibration')
         if config['use_mpi']:
             mpirun('-np',
                    config['mpi_cores'],
@@ -282,7 +297,7 @@ class Location:
         """
 
         final_dir = join(self.output_path, 'final')
-        self.create_dir(final_dir)
+        create_dir(final_dir)
         default_step = 1
 
         cs = ControlStats(join(join(self.output_path,
@@ -295,6 +310,7 @@ class Location:
             f.write(self.create_scenario_file(cs.params,
                                               monte_carlo_iterations))
 
+        self.save_status('final calibration')
         if config['use_mpi']:
             mpirun('-np',
                    config['mpi_cores'],
@@ -368,6 +384,7 @@ class Location:
             f.write(self.create_scenario_file(cs.params,
                                               monte_carlo_iterations))
 
+        self.save_status('prediction')
         if config['use_mpi']:
             mpirun('-np',
                    1,
@@ -407,6 +424,7 @@ class Location:
             ymin = str(extent["ymin"])
             ymax = str(extent["ymax"])
 
+            self.save_status('gif2tif')
         for year in range(start + 1, end + 1):
             gif = join(predict_dir,
                        "%s_urban_%s.gif" % (self.location, year))
@@ -443,13 +461,11 @@ class Region:
 
     def __init__(self, region_dir,
                  predict_start, predict_end,
-                 monte_carlo_iterations,
-                 mpi_cores):
+                 monte_carlo_iterations):
         self.region_dir = region_dir
         self.predict_start = predict_start
         self.predict_end = predict_end
         self.monte_carlo_iterations = monte_carlo_iterations
-        self
         self.env = Environment(loader=PackageLoader('sleuth_automation',
                                                     'templates'))
 
@@ -468,6 +484,7 @@ class Region:
                                      'predict_start': self.predict_start,
                                      'predict_end': self.predict_end,
                                      'sleuth_path': config['sleuth_path'],
-                                     'mpi_cores': self.mpi_cores,
+                                     'mpi_cores': config['mpi_cores'],
                                      'montecarlo_iterations':
-                                     self.montecarlo_iterations}))
+                                     self.monte_carlo_iterations}))
+        return f.name
