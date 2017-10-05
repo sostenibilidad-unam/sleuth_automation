@@ -53,6 +53,7 @@ from jinja2 import Environment, PackageLoader
 from controlstats import ControlStats
 import json
 import pickle
+import datetime
 
 try:
     from sh import bash, gdal_translate, otbcli_BandMath, which
@@ -107,12 +108,9 @@ class Location:
     .. _documentation: http://www.ncgia.ucsb.edu/projects/gig/About/dtInput.htm
     """
 
-    def save_status(self, status):
-        s = self.__dict__.copy()
-        del(s['env'])
-        s['status'] = status
+    def save_status(self):
         with open(join(self.input_path, "%s.pickle" % self.location), 'w') as p:
-            pickle.dump(s, p)
+            pickle.dump(self.status, p)
 
 
     def __init__(self, location, input_path):
@@ -157,7 +155,19 @@ class Location:
 
         self.env = Environment(loader=PackageLoader('sleuth_automation',
                                                     'templates'))
-        self.save_status('initialized')
+
+        s = self.__dict__.copy()
+        del(s['env'])
+        s.update(config)
+
+        self.status = {'init': {'stamp': datetime.datetime.now(),
+                                'data': s},
+                       'calibration': {'coarse':{},
+                                       'fine': {},
+                                       'final': {}},
+                       'prediction': {}}
+
+        self.save_status()
 
 
     def create_scenario_file(self, params, monte_carlo_iterations):
@@ -236,7 +246,9 @@ class Location:
             f.write(self.create_scenario_file(coarse_params,
                                               monte_carlo_iterations))
 
-        self.save_status('coarse calibration')
+        self.status['calibration']['coarse']['start'] = datetime.datetime.now()
+        self.status['calibration']['coarse']['params'] = coarse_params
+        self.save_status()
         if config['use_mpi']:
             mpirun('-np',
                    config['mpi_cores'],
@@ -248,6 +260,9 @@ class Location:
         else:
             bash('-c', "%s calibrate %s" % (config['grow_binary'],
                                             scenario_file_path))
+        self.status['calibration']['coarse']['end'] = datetime.datetime.now()
+        self.save_status()
+
 
     def calibrate_fine(self, monte_carlo_iterations=50):
         """
@@ -267,13 +282,17 @@ class Location:
                                     'coarse'),
                                'control_stats.log'), default_step)
         cs.params['output_dir'] = fine_dir + '/'
+        cs.params['monte_carlo_iterations'] = monte_carlo_iterations
         with open(join(self.output_path,
                        'scenario.%s.fine' % self.location), 'w') as f:
             scenario_file_path = f.name
             f.write(self.create_scenario_file(cs.params,
                                               monte_carlo_iterations))
 
-        self.save_status('fine calibration')
+
+        self.status['calibration']['fine']['start'] = datetime.datetime.now()
+        self.status['calibration']['fine']['params'] = cs.params
+        self.save_status()
         if config['use_mpi']:
             mpirun('-np',
                    config['mpi_cores'],
@@ -285,6 +304,9 @@ class Location:
         else:
             bash('-c', "%s calibrate %s" % (config['grow_binary'],
                                             scenario_file_path))
+        self.status['calibration']['fine']['end'] = datetime.datetime.now()
+        self.save_status()
+
 
     def calibrate_final(self, monte_carlo_iterations=50):
         """
@@ -304,13 +326,16 @@ class Location:
                                     'fine'),
                                'control_stats.log'), default_step)
         cs.params['output_dir'] = final_dir + '/'
+        cs.params['monte_carlo_iterations'] = monte_carlo_iterations
         with open(join(self.output_path,
                        'scenario.%s.final' % self.location), 'w') as f:
             scenario_file_path = f.name
             f.write(self.create_scenario_file(cs.params,
                                               monte_carlo_iterations))
 
-        self.save_status('final calibration')
+        self.status['calibration']['final']['start'] = datetime.datetime.now()
+        self.status['calibration']['final']['params'] = cs.params
+        self.save_status()
         if config['use_mpi']:
             mpirun('-np',
                    config['mpi_cores'],
@@ -322,6 +347,9 @@ class Location:
         else:
             bash('-c', "%s calibrate %s" % (config['grow_binary'],
                                             scenario_file_path))
+        self.status['calibration']['final']['end'] = datetime.datetime.now()
+        self.save_status()
+
 
     def sleuth_calibrate(self):
         """
@@ -334,7 +362,7 @@ class Location:
     def sleuth_predict(self,
                        start, end,
                        diff=None, brd=None, sprd=None, slp=None, rg=None,
-                       monte_carlo_iterations=150):
+                       monte_carlo_iterations=50):
         """
         Run SLEUTH prediction step for range enclosed in start, end.
 
@@ -377,6 +405,7 @@ class Location:
         if rg:
             cs.params['rg'] = rg
 
+        cs.params['monte_carlo_iterations'] = monte_carlo_iterations
         with open(join(self.output_path,
                        'scenario.%s.predict' % self.location),
                   'w') as f:
@@ -384,7 +413,10 @@ class Location:
             f.write(self.create_scenario_file(cs.params,
                                               monte_carlo_iterations))
 
-        self.save_status('prediction')
+
+        self.status['prediction']['start'] = datetime.datetime.now()
+        self.status['prediction']['params'] = cs.params
+        self.save_status()
         if config['use_mpi']:
             mpirun('-np',
                    1,
@@ -396,6 +428,9 @@ class Location:
         else:
             bash('-c', "%s predict %s" % (config['grow_binary'],
                                           scenario_file_path))
+        self.status['prediction']['end'] = datetime.datetime.now()
+        self.save_status()
+
 
     def gif2tif(self, start, end):
         """
@@ -477,7 +512,7 @@ class Region:
                                                             f)) + '/'})
 
     def build(self):
-        template = self.env.get_template("sleuth_template.condor")
+        template = self.env.get_template("condor_submit.jinja")
         with open(join(self.region_dir, 'submit.condor'), 'w') as f:
             f.write(template.render({'executable': which('sleuth_run.py'),
                                      'list_of_regions': self.locations,
