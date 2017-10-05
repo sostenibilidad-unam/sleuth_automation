@@ -42,7 +42,8 @@ l.calibrate_fine(monte_carlo_iterations=args.montecarlo_iterations)
 l.calibrate_final(monte_carlo_iterations=args.montecarlo_iterations)
 
 l.sleuth_predict(args.predict_start,
-                 args.predict_end)
+                 args.predict_end,
+                 monte_carlo_iterations=args.montecarlo_iterations)
 
 #l.gif2tif(args.predict_start,
 #          args.predict_end)
