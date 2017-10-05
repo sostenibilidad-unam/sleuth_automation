@@ -129,7 +129,6 @@ class Location:
         self.input_path = input_path
         self.output_path = join(input_path, 'out')
         create_dir(self.output_path)
-        # self.validate_input_path()
 
         self.urban_layers = []
         self.roads_layers = []
@@ -360,7 +359,7 @@ class Location:
         self.calibrate_final()
 
     def sleuth_predict(self,
-                       start, end,
+                       end,
                        diff=None, brd=None, sprd=None, slp=None, rg=None,
                        monte_carlo_iterations=50):
         """
@@ -378,7 +377,6 @@ class Location:
         - `monte_carlo_iterations`: iterations for the prediction step
         """
 
-        self.predict_start = start
         self.predict_end = end
 
         predict_dir = join(self.output_path, 'predict')
@@ -495,10 +493,9 @@ class Region:
     """
 
     def __init__(self, region_dir,
-                 predict_start, predict_end,
+                 predict_end,
                  monte_carlo_iterations):
         self.region_dir = region_dir
-        self.predict_start = predict_start
         self.predict_end = predict_end
         self.monte_carlo_iterations = monte_carlo_iterations
         self.env = Environment(loader=PackageLoader('sleuth_automation',
@@ -511,12 +508,13 @@ class Region:
                                        "path": abspath(join(region_dir,
                                                             f)) + '/'})
 
+
+
     def build(self):
         template = self.env.get_template("condor_submit.jinja")
         with open(join(self.region_dir, 'submit.condor'), 'w') as f:
             f.write(template.render({'executable': which('sleuth_run.py'),
                                      'list_of_regions': self.locations,
-                                     'predict_start': self.predict_start,
                                      'predict_end': self.predict_end,
                                      'sleuth_path': config['sleuth_path'],
                                      'mpi_cores': config['mpi_cores'],

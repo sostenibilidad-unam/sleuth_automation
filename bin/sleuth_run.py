@@ -15,8 +15,6 @@ parser.add_argument('--location_name', required=True,
 parser.add_argument('--mpi_cores', default=0,
                     help="""number of cores available for MPI,
                             if 0 (default) don't use mpi""")
-parser.add_argument('--predict_start', type=int, required=True,
-                    help='starting year of prediction interval')
 parser.add_argument('--predict_end', type=int, required=True,
                     help='ending year of prediction interval')
 parser.add_argument('--montecarlo_iterations', type=int, default=50,
@@ -41,8 +39,7 @@ l.calibrate_coarse(monte_carlo_iterations=args.montecarlo_iterations)
 l.calibrate_fine(monte_carlo_iterations=args.montecarlo_iterations)
 l.calibrate_final(monte_carlo_iterations=args.montecarlo_iterations)
 
-l.sleuth_predict(args.predict_start,
-                 args.predict_end,
+l.sleuth_predict(args.predict_end,
                  monte_carlo_iterations=args.montecarlo_iterations)
 
 #l.gif2tif(args.predict_start,

@@ -21,8 +21,6 @@ parser.add_argument('--region_dir',
 parser.add_argument('--mpi_cores', default=0,
                     help="""number of cores available for MPI,
                             if 0 (default) don't use mpi""")
-parser.add_argument('--predict_start', type=int, required=True,
-                    help='starting year of prediction interval')
 parser.add_argument('--predict_end', type=int, required=True,
                     help='ending year of prediction interval')
 parser.add_argument('--montecarlo_iterations', type=int, default=50,
@@ -39,7 +37,6 @@ else:
 
 
 r = sleuth.Region(region_dir=args.region_dir,
-                  predict_start=args.predict_start,
                   predict_end=args.predict_end,
                   monte_carlo_iterations=args.montecarlo_iterations)
 
