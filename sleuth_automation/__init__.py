@@ -382,7 +382,7 @@ class Location:
         predict_dir = join(self.output_path, 'predict')
         create_dir(predict_dir)
 
-        default_step = 1  # ignored for predict
+        default_step = 0  # ignored for predict
         cs = ControlStats(join(join(self.output_path,
                                     'final'),
                                'control_stats.log'), default_step)

@@ -77,33 +77,33 @@ class ControlStats:
 
             diff = int(best_fit['Diff'].values[0])
             diff_max = primeros10['Diff'].max()
-            diff_start = self.start(primeros10['Diff'].min(), diff_max)
-            diff_step = self.step(diff_max, diff_start)
-            diff_end = self.end(diff_start, diff_step)
+            diff_start = self.start(primeros10['Diff'].min(), diff_max) if self.default_step != 0 else diff
+            diff_step = self.step(diff_max, diff_start) if self.default_step != 0 else 1
+            diff_end = self.end(diff_start, diff_step) if self.default_step != 0 else diff
 
             brd = int(best_fit['Brd'].values[0])
             brd_max = primeros10['Brd'].max()
-            brd_start = self.start(primeros10['Brd'].min(), brd_max)
-            brd_step = self.step(brd_max, brd_start)
-            brd_end = self.end(brd_start, brd_step)
+            brd_start = self.start(primeros10['Brd'].min(), brd_max) if self.default_step != 0 else brd
+            brd_step = self.step(brd_max, brd_start) if self.default_step != 0 else 1
+            brd_end = self.end(brd_start, brd_step) if self.default_step != 1 else brd
 
             sprd = int(best_fit['Sprd'].values[0])
             sprd_max = primeros10['Sprd'].max()
-            sprd_start = self.start(primeros10['Sprd'].min(), sprd_max)
-            sprd_step = self.step(sprd_max, sprd_start)
-            sprd_end = self.end(sprd_start, sprd_step)
+            sprd_start = self.start(primeros10['Sprd'].min(), sprd_max) if self.default_step != 0 else sprd
+            sprd_step = self.step(sprd_max, sprd_start) if self.default_step != 0 else 1
+            sprd_end = self.end(sprd_start, sprd_step) if self.default_step != 1 else sprd
 
             slp = int(best_fit['Slp'].values[0])
             slp_max = primeros10['Slp'].max()
-            slp_start = self.start(primeros10['Slp'].min(), slp_max)
-            slp_step = self.step(slp_max, slp_start)
-            slp_end = self.end(slp_start, slp_step)
+            slp_start = self.start(primeros10['Slp'].min(), slp_max) if self.default_step != 0 else slp
+            slp_step = self.step(slp_max, slp_start) if self.default_step != 0 else 1
+            slp_end = self.end(slp_start, slp_step) if self.default_step != 1 else slp
 
             rg = int(best_fit['RG'].values[0])
             rg_max = primeros10['RG'].max()
-            rg_start = self.start(primeros10['RG'].min(), rg_max)
-            rg_step = self.step(rg_max, rg_start)
-            rg_end = self.end(rg_start, rg_step)
+            rg_start = self.start(primeros10['RG'].min(), rg_max) if self.default_step != 0 else rg
+            rg_step = self.step(rg_max, rg_start) if self.default_step != 0 else 1
+            rg_end = self.end(rg_start, rg_step) if self.default_step != 0 else rg
 
             self.params = {'diff': diff,
                            'diff_start': diff_start,
