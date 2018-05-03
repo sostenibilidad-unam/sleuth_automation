@@ -69,8 +69,11 @@ class ControlStats:
         with open(path) as controlstats:
             widths = [7, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 5, 5, 5, 5, 5]
             df = pandas.read_fwf(controlstats, skiprows=1, widths=widths)
-            primeros10 = df.sort_values(by='Leesalee', ascending=False)[:10]
-            best_fit = df.sort_values(by='Leesalee', ascending=False)[:1]
+
+            df['osm'] = df['Compare'] * df['Pop'] * df['Edges'] * df['Clusters'] * df['Slope'] * df['Xmean'] * df['Ymean']
+
+            primeros10 = df.sort_values(by='osm', ascending=False)[:10]
+            best_fit = df.sort_values(by='osm', ascending=False)[:1]
 
             diff = int(best_fit['Diff'].values[0])
             diff_max = primeros10['Diff'].max()
