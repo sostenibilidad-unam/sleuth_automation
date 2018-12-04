@@ -367,13 +367,12 @@ class Location:
 
         Parameters:
 
-        - `start`: begining of temporal range for prediction
-        - `end`: end of temporal range for prediction
-        - `diff`: TODO
-        - `brd`: TODO
+        - `end`: end of temporal range for prediction, beggining is infered from last input
+        - `diff`: TODO: see model documentation
+        - `brd`: TODO: see model documentation
         - `sprd`: spread
         - `slp`: slope
-        - `rg`: TODO
+        - `rg`: TODO: see model documentation
         - `monte_carlo_iterations`: iterations for the prediction step
         """
 
