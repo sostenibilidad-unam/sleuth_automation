@@ -7,7 +7,7 @@ def readme():
 
 
 setup(name='sleuth_automation',
-      version='2.0.0',
+      version='2.0.1',
       description='Python wrapper for SLEUTH urban growth model.',
       long_description=readme(),
       classifiers=[
@@ -23,6 +23,7 @@ setup(name='sleuth_automation',
       author_email='rgarcia@iecologia.unam.mx',
       license='GPLv3',
       packages=['sleuth_automation'],
+      data_files=[('templates', ['condor_submit.jinja', 'scenario.jinja'])],
       install_requires=['pandas', 'jinja2', 'sh'],
       scripts=['bin/sleuth_run.py',
                'bin/create_sleuth_condor_batch.py'],
