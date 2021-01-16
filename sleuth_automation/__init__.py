@@ -55,10 +55,12 @@ import json
 import pickle
 import datetime
 
+
 try:
     from sh import bash, gdal_translate, otbcli_BandMath, which
-except:
-    pass
+except ImportError:
+    print("failed to import one of bash, gdal_translate, otbcli_BandMath, which. Please add them to your PATH variable.")
+    exit()
 
 try:
     from sh import mpirun

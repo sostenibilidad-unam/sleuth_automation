@@ -18,7 +18,7 @@ parser.add_argument('--sleuth_path', required=True,
 parser.add_argument('--region_dir',
                     required=True,
                     help='path to region dir containing locations')
-parser.add_argument('--mpi_cores', default=0,
+parser.add_argument('--mpi_cores', default=0, type=int,
                     help="""number of cores available for MPI,
                             if 0 (default) don't use mpi""")
 parser.add_argument('--predict_end', type=int, required=True,
@@ -40,4 +40,4 @@ r = sleuth.Region(region_dir=args.region_dir,
                   predict_end=args.predict_end,
                   monte_carlo_iterations=args.montecarlo_iterations)
 
-print "wrote " + r.build()
+print("wrote " + r.build())
