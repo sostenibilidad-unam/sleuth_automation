@@ -12,7 +12,7 @@ parser.add_argument('--location_dir', required=True,
                     help='path to location directory')
 parser.add_argument('--location_name', required=True,
                     help='name of location')
-parser.add_argument('--mpi_cores', default=0,
+parser.add_argument('--mpi_cores', default=0, type=int,
                     help="""number of cores available for MPI,
                             if 0 (default) don't use mpi""")
 parser.add_argument('--predict_end', type=int, required=True,

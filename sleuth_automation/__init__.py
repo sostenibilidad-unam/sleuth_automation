@@ -50,7 +50,7 @@ __docformat__ = 'restructuredtext'
 import os
 from os.path import join, abspath
 from jinja2 import Environment, PackageLoader
-from controlstats import ControlStats
+from sleuth_automation.controlstats import ControlStats
 import json
 import pickle
 import datetime
@@ -73,7 +73,7 @@ def create_dir(path):
     If directory doesn't exist: create it.
     """
     if not os.path.exists(path):
-        os.mkdir(path, 0755)
+        os.mkdir(path, mode=755)
 
 
 def configure(sleuth_path, use_mpi=False, mpi_cores=40):
@@ -109,7 +109,7 @@ class Location:
     """
 
     def save_status(self):
-        with open(join(self.input_path, "%s.pickle" % self.location), 'w') as p:
+        with open(join(self.input_path, "%s.pickle" % self.location), 'wb') as p:
             pickle.dump(self.status, p)
 
 
