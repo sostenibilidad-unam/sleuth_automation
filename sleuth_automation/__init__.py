@@ -75,7 +75,7 @@ def create_dir(path):
     If directory doesn't exist: create it.
     """
     if not os.path.exists(path):
-        os.mkdir(path, mode=755)
+        os.mkdir(path, mode=0o755)
 
 
 def configure(sleuth_path, use_mpi=False, mpi_cores=40):
